@@ -375,6 +375,11 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
       this._submenuTimeout = null;
     }
 
+    // Release (deselect) the token when the HUD closes
+    if (this.object && !options.skipRelease) {
+      this.object.release();
+    }
+
     this._cleanupInputs();
     this._clearCaches();
     return await super.close(options);
