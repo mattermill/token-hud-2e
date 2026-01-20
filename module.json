@@ -1,0 +1,17 @@
+{
+  "id": "token-hud-2e",
+  "title": "Token HUD 2e",
+  "description": "Interface improvements for Pathfinder 2e's token HUD.",
+  "authors": [
+    {
+      "name": "mattermill"
+    }
+  ],
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "10",
+    "verified": "13"
+  },
+  "scripts": ["scripts/token-hud.js"],
+  "styles": ["styles/style.css"]
+}

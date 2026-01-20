@@ -1,0 +1,410 @@
+/* Context Menu Token HUD */
+#token-hud {
+  overflow: visible;
+  position: fixed !important;
+  z-index: 10000 !important;
+  pointer-events: auto;
+  width: auto;
+  height: auto;
+  transform: none !important;
+  transform-origin: top left;
+  scale: 1 !important;
+}
+
+#token-hud * {
+  box-sizing: border-box;
+}
+
+.main-menu {
+  position: absolute;
+  top: 16%;
+  left: calc(100% + 8px);
+  width: 200px;
+  padding: 4px;
+}
+.main-menu,
+.submenu {
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main menu items */
+.menu-item,
+.submenu-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 8px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  user-select: none;
+  height: 24px !important;
+  width: 100%;
+  flex-shrink: 0;
+  position: relative;
+  pointer-events: auto;
+  border-radius: 4px;
+  margin: 1px 0;
+  border: 1px solid transparent;
+}
+
+.menu-item:hover:not(.active),
+.action-icon:hover:not(.active),
+.menu-item.submenu-trigger:hover:not(.active),
+.theme-light #token-hud .menu-item:hover:not(.active) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.menu-item.active,
+.action-icon.active,
+.menu-item.selected,
+.menu-item.submenu-trigger.expanded,
+.movement-actions .menu-item.active,
+.status-effects .menu-item.selected {
+  background-color: #5a141e;
+  border: 1px solid #821e32;
+  transition: none; /* Disable transition for selected state to prevent flicker */
+}
+
+/* Keyboard navigation selection indicator */
+.menu-item.keyboard-selected {
+  background-color: rgba(255, 255, 255, 0.1);
+  outline: 2px solid rgba(255, 255, 255, 0.3);
+  outline-offset: -2px;
+}
+
+.menu-item.keyboard-selected:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.submenu-item.effect-control {
+  opacity: 1;
+}
+/* Submenu triggers get special treatment */
+.menu-item.submenu-trigger {
+  position: relative;
+}
+
+.menu-icon {
+  width: 14px;
+  height: 14px;
+  margin-right: 10px;
+  filter: var(--hud-icon-filter, none);
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.menu-icon.fa,
+.menu-icon.fas,
+.menu-icon.far {
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.menu-label {
+  flex: 1;
+  white-space: nowrap;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: normal;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.condition-value {
+  margin-left: auto;
+  font-size: 11px;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  padding: 2px 6px;
+  min-width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.condition-active-indicator {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.condition-active-indicator i {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.submenu-arrow {
+  margin-left: auto;
+  font-size: 10px;
+  opacity: 0.7;
+  flex-shrink: 0;
+  pointer-events: none;
+  transition: transform 0.2s ease;
+}
+
+.menu-separator {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.15);
+  margin: 2px 0;
+  pointer-events: none;
+}
+
+.menu-wrapper {
+  position: relative;
+}
+/* Submenu positioning - appears to the right */
+.submenu {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  width: 180px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 10001;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-10px);
+}
+
+.submenu.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* Handle submenu positioning when near screen edges */
+.submenu.flip-horizontal {
+  left: auto;
+  right: 100%;
+  margin-left: 0;
+  margin-right: -1px;
+  transform: translateX(10px);
+}
+
+.submenu.flip-horizontal.active {
+  transform: translateX(0);
+}
+
+.submenu.flip-vertical {
+  top: auto;
+  bottom: 0;
+}
+/* Input styles for elevation and bars */
+.elevation-input,
+.bar-input {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 4px;
+  padding: 3px 6px;
+  color: white;
+  font-size: 11px;
+  width: 45px;
+  height: 22px;
+  margin-left: auto;
+  flex-shrink: 0;
+  pointer-events: auto;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.elevation-input:focus,
+.bar-input:focus {
+  outline: none;
+  border-color: rgba(0, 123, 255, 0.6);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+}
+
+.elevation-input:disabled,
+.bar-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Search input container */
+.search-container {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+  height: 24px;
+  margin-bottom: 2px;
+}
+
+.effect-search-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: white;
+  font-size: 11px;
+  font-family: var(--font-primary);
+  text-align: left;
+}
+
+.effect-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 400;
+}
+
+/* Status Effects specific styles (forced vertical list) */
+.status-effects {
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 2px;
+}
+
+/* Removed green active styles - using default red selected style for all states */
+
+/* Movement Actions specific styles */
+.movement-actions {
+  min-width: 160px;
+}
+
+/* Animation for submenu appearance */
+@keyframes submenuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes submenuFadeOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+}
+
+.submenu.animating-in {
+  animation: submenuFadeIn 0.2s ease-out forwards;
+}
+
+.submenu.animating-out {
+  animation: submenuFadeOut 0.15s ease-in forwards;
+}
+
+/* Theme compatibility */
+.theme-dark #token-hud,
+body.theme-dark #token-hud {
+  --hud-icon-filter: none;
+}
+
+.theme-light #token-hud,
+body.theme-light #token-hud {
+  --hud-icon-filter: invert(1);
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.theme-light #token-hud .popover-menu {
+  color: #333;
+}
+
+.theme-light #token-hud .submenu {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: rgba(0, 0, 0, 0.2);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.3);
+}
+
+.theme-light #token-hud .submenu .menu-item {
+  color: #333;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  #token-hud {
+    min-width: 180px;
+    max-width: 250px;
+  }
+  .menu-item {
+    padding: 5px 10px;
+    height: 26px;
+  }
+}
+
+/* Focus indicators for accessibility */
+.menu-item:focus {
+  outline: 2px solid rgba(0, 123, 255, 0.6);
+  outline-offset: -1px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  #token-hud {
+    border-width: 2px;
+  }
+
+  .submenu {
+    border-width: 2px;
+  }
+
+  .menu-separator,
+  .submenu-separator {
+    background-color: rgba(255, 255, 255, 0.4);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .submenu,
+  .submenu-arrow,
+  .menu-item {
+    transition: none;
+  }
+
+  .submenu.animating-in,
+  .submenu.animating-out {
+    animation: none;
+  }
+}
+
+/* Scrollbars for submenus */
+.submenu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.submenu::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.submenu::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.submenu::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}

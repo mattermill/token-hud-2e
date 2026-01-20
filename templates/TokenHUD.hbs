@@ -1,0 +1,183 @@
+<!-- Main Menu Container -->
+<div class="menu-container main-menu" id="main-menu">
+  <div class="menu-title">{{actorName}}</div>
+  <div class="menu-separator"></div>
+
+  <!-- Attribute Bars -->
+  {{#if displayBar1}}
+  <div class="menu-item bar-item">
+    <i class="fas fa-heart menu-icon"></i>
+    <span class="menu-label">Health</span>
+    {{#if bar1Data.editable}}
+    <input
+      type="text"
+      name="bar1"
+      value="{{bar1Data.value}}"
+      class="bar-input"
+    />
+    {{else}}
+    <input
+      type="text"
+      name="bar1"
+      value="{{bar1Data.value}}"
+      class="bar-input"
+      disabled
+    />
+    {{/if}}
+  </div>
+  {{/if}} {{#if displayBar2}}
+  <div class="menu-item bar-item">
+    <i class="fas fa-bolt menu-icon"></i>
+    <span class="menu-label">Resource</span>
+    {{#if bar2Data.editable}}
+    <input
+      type="text"
+      name="bar2"
+      value="{{bar2Data.value}}"
+      class="bar-input"
+    />
+    {{else}}
+    <input
+      type="text"
+      name="bar2"
+      value="{{bar2Data.value}}"
+      class="bar-input"
+      disabled
+    />
+    {{/if}}
+  </div>
+  {{/if}}
+
+  <!-- Status Effects -->
+  <div class="menu-wrapper">
+    <div
+      class="menu-item submenu-trigger"
+      data-action="togglePalette"
+      data-palette="effects"
+    >
+      <i class="fa-solid fa-person-rays fas menu-icon"></i>
+      <span class="menu-label">Status Effects</span>
+      <i class="fas fa-chevron-right submenu-arrow"></i>
+    </div>
+    <div class="submenu status-effects" data-palette="effects">
+      <div class="search-container">
+        <input
+          type="text"
+          class="effect-search-input"
+          placeholder="Search effects..."
+          data-effect-search="true"
+          autocomplete="off"
+        />
+      </div>
+      {{#each statusEffects as |status|}}
+      <div
+        class="menu-item submenu-item effect-control {{status.cssClass}}"
+        data-action="effect"
+        data-status-id="{{status.id}}"
+        data-effect-name="{{status.title}}"
+      >
+        {{#if status.src}}
+        <img src="{{status.src}}" class="menu-icon" alt="{{status.title}}" />
+        {{else}}
+        <i class="fas fa-star menu-icon" inert></i>
+        {{/if}}
+        <span class="menu-label">{{status.title}}</span>
+        {{#if status.value}}
+        <span class="condition-value">{{status.value}}</span>
+        {{else if status.isActive}} {{! Show checkmark indicator for active
+        boolean effects }}
+        <span class="condition-active-indicator">
+          <i class="fas fa-check"></i>
+        </span>
+        {{/if}}
+      </div>
+      {{/each}}
+    </div>
+  </div>
+
+  <!-- Token Tags removed -->
+
+  <div class="menu-separator"></div>
+
+  {{#if isGM}}
+  <div class="menu-item {{visibilityClass}}" data-action="visibility">
+    {{#if visibilityClass}}
+    <i class="fa-solid fa-eye-slash fas menu-icon"></i>
+    <span class="menu-label">Hidden</span>
+    {{else}}
+    <i class="fa-solid fa-eye fas menu-icon"></i>
+    <span class="menu-label">Visible</span>
+    {{/if}}
+  </div>
+  {{/if}}
+
+  <div class="menu-separator"></div>
+
+  <!-- Combat and Target -->
+  {{#if canToggleCombat}}
+  <div class="menu-item {{combatClass}}" data-action="combat">
+    <i class="fa-solid fa-swords fas menu-icon"></i>
+    {{#if inCombat}}
+    <span class="menu-label">In Combat</span>
+    {{else}}
+    <span class="menu-label">Add to Combat</span>
+    {{/if}}
+  </div>
+  {{/if}}
+
+  <div class="menu-item {{targetClass}}" data-action="target">
+    <i class="fa fa-solid fa-crosshairs-simple menu-icon"></i>
+    <span class="menu-label">Target</span>
+  </div>
+
+  <div class="menu-separator"></div>
+
+  <!-- Layer Controls -->
+  <div class="menu-item bar-item" data-action="sort" data-direction="up">
+    <i class="fa-solid fa-arrow-up fas menu-icon" inert></i>
+    <span class="menu-label">Bring to Front</span>
+  </div>
+
+  <div class="menu-item" data-action="sort" data-direction="down">
+    <i class="fa-solid fa-arrow-down fas menu-icon" inert></i>
+    <span class="menu-label">Send to Back</span>
+  </div>
+
+  <!-- Elevation Control -->
+  <div class="menu-item elevation-item">
+    <i class="fas fa-angle-up menu-icon"></i>
+    <span class="menu-label">Elevation</span>
+    {{#if (or locked (and isGamePaused (not isGM)))}}
+    <input
+      type="text"
+      name="elevation"
+      value="{{elevation}}"
+      class="elevation-input"
+      disabled
+    />
+    {{else}}
+    <input
+      type="text"
+      name="elevation"
+      value="{{elevation}}"
+      class="elevation-input"
+    />
+    {{/if}}
+  </div>
+
+  {{#if canConfigure}}
+  <div class="menu-separator"></div>
+  <div class="menu-item" data-action="config">
+    <i class="fa-solid fa-gear fas menu-icon" inert></i>
+    <span class="menu-label">Configure</span>
+  </div>
+  {{/if}}
+</div>
+<!-- End Main Menu Container -->
+
+<!-- Duplicate stray status effects fragment removed -->
+
+<!-- Movement Menu Container -->
+<div class="menu-container movement-menu" id="movement-menu">
+  <!-- Movement menu content will be populated by JavaScript -->
+</div>
