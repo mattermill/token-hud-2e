@@ -24,5 +24,5 @@ Clicking the status effects item in the HUD's list will open a sub-menu where yo
 Paste the following manifest URL into Foundry's "Install Module" dialog:
     
  ```
- https://raw.githubusercontent.com/mattermill/token-hud-2e/refs/heads/main/module.json
+ https://raw.githubusercontent.com/mattermill/token-hud-2e/main/module.json
  ```
