@@ -2,6 +2,8 @@
 
 Foundry VTT token HUD improvements for [foundryvtt/pf2e](https://github.com/foundryvtt/pf2e).
 
+
+
 ## Usage
 ### Applying Status Effects
 Clicking the status effects item in the HUD's list will open a sub-menu where you can immediately begin searching for status effects to apply to the token.
@@ -24,3 +26,6 @@ Paste the following manifest URL into Foundry's "Install Module" dialog:
  ```
  https://raw.githubusercontent.com/mattermill/token-hud-2e/refs/heads/main/module.json
  ```
+
+## Screenshots
+![Apply Conditions](Screenshot.png)
