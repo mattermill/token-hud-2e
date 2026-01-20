@@ -81,11 +81,32 @@
         {{else}}
         <i class="fas fa-star menu-icon" inert></i>
         {{/if}}
-        <span class="menu-label">{{status.title}}</span>
-        {{#if status.value}}
-        <span class="condition-value">{{status.value}}</span>
-        {{else if status.isActive}} {{! Show checkmark indicator for active
-        boolean effects }}
+        <span class="menu-label"
+          >{{status.title}} {{#if status.isValued}}{{#if
+          status.value}}{{status.value}}{{/if}}{{/if}}</span
+        >
+        {{#if status.isValued}}
+        <span class="condition-controls">
+          {{#if status.value}}
+          <div
+            class="condition-btn decrement"
+            data-action="decrementEffect"
+            data-status-id="{{status.id}}"
+            title="Decrease"
+          >
+            <i class="fas fa-minus"></i>
+          </div>
+          {{/if}}
+          <div
+            class="condition-btn increment"
+            data-action="incrementEffect"
+            data-status-id="{{status.id}}"
+            title="Increase"
+          >
+            <i class="fas fa-plus"></i>
+          </div>
+        </span>
+        {{else if status.isActive}}
         <span class="condition-active-indicator">
           <i class="fas fa-check"></i>
         </span>
@@ -98,14 +119,53 @@
   <div class="menu-separator"></div>
 
   {{#if isGM}}
-  <div class="menu-item {{visibilityClass}}" data-action="visibility">
-    {{#if visibilityClass}}
-    <i class="fa-solid fa-eye-slash fas menu-icon"></i>
-    <span class="menu-label">Hidden</span>
-    {{else}}
-    <i class="fa-solid fa-eye fas menu-icon"></i>
-    <span class="menu-label">Visible</span>
-    {{/if}}
+  <div class="menu-wrapper">
+    <div
+      class="menu-item submenu-trigger {{conditionalVisibilityClass}} effect-control"
+      data-action="visibility"
+      data-palette="conditional-visibility"
+    >
+      {{#if conditionalVisibilityActive}}
+      <i class="fa-solid fa-eye-slash fas menu-icon"></i>
+      {{else}}
+      <i class="fa-solid fa-eye fas menu-icon"></i>
+      {{/if}}
+      <span class="menu-label">{{conditionalVisibilityLabel}}</span>
+      <i class="fas fa-chevron-right submenu-arrow"></i>
+    </div>
+    <div
+      class="submenu conditional-visibility"
+      data-palette="conditional-visibility"
+    >
+      <div
+        class="menu-item submenu-item {{#if (or hiddenFromAll hiddenFromAllActors)}}active{{/if}}"
+        data-action="conditionalVisibilityAll"
+      >
+        <i class="fa-solid fa-users fas menu-icon"></i>
+        <span class="menu-label">All</span>
+        {{#if (or hiddenFromAll hiddenFromAllActors)}}
+        <span class="condition-active-indicator">
+          <i class="fas fa-check"></i>
+        </span>
+        {{/if}}
+      </div>
+      <div class="menu-separator"></div>
+      {{#each conditionalVisibilityActors as |actor|}}
+      <div
+        class="menu-item submenu-item conditional-visibility-token {{actor.cssClass}}"
+        data-action="conditionalVisibilityToken"
+        data-actor-id="{{actor.id}}"
+      >
+        <img src="{{actor.img}}" class="menu-icon" alt="{{actor.name}}" />
+        <span class="menu-label">{{actor.name}}</span>
+        {{#if actor.isHidden}}
+        <span class="condition-active-indicator">
+          <i class="fas fa-eye-slash"></i>
+        </span>
+        {{/if}}
+      </div>
+      {{/each}}
+    </div>
   </div>
   {{/if}}
 

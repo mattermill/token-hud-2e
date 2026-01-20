@@ -33,15 +33,16 @@
   flex-direction: column;
 }
 
-/* Main menu items */
+.menu-title {
+  padding: 0.5rem;
+}
 .menu-item,
 .submenu-item {
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  padding: 0 8px;
+  padding: 2px 6px;
   cursor: pointer;
-  transition: background-color 0.15s ease;
   user-select: none;
   height: 24px !important;
   width: 100%;
@@ -67,10 +68,9 @@
 .status-effects .menu-item.selected {
   background-color: #5a141e;
   border: 1px solid #821e32;
-  transition: none; /* Disable transition for selected state to prevent flicker */
+  transition: none;
 }
 
-/* Keyboard navigation selection indicator */
 .menu-item.keyboard-selected {
   background-color: rgba(255, 255, 255, 0.1);
   outline: 2px solid rgba(255, 255, 255, 0.3);
@@ -84,7 +84,6 @@
 .submenu-item.effect-control {
   opacity: 1;
 }
-/* Submenu triggers get special treatment */
 .menu-item.submenu-trigger {
   position: relative;
 }
@@ -119,8 +118,39 @@
   pointer-events: none;
 }
 
-.condition-value {
+.condition-controls {
   margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.condition-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  border-radius: 3px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.condition-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: rgba(255, 255, 255, 1);
+}
+
+.condition-btn i {
+  font-size: 9px;
+  pointer-events: none;
+}
+
+.condition-value {
   font-size: 11px;
   font-weight: bold;
   color: rgba(255, 255, 255, 0.9);
@@ -131,6 +161,10 @@
   text-align: center;
   flex-shrink: 0;
   pointer-events: none;
+}
+
+.condition-controls .condition-value {
+  margin-left: 0;
 }
 
 .condition-active-indicator {
@@ -155,7 +189,6 @@
   opacity: 0.7;
   flex-shrink: 0;
   pointer-events: none;
-  transition: transform 0.2s ease;
 }
 
 .menu-separator {
@@ -168,7 +201,7 @@
 .menu-wrapper {
   position: relative;
 }
-/* Submenu positioning - appears to the right */
+
 .submenu {
   position: absolute;
   left: 100%;
@@ -177,38 +210,28 @@
   max-height: 300px;
   overflow-y: auto;
   z-index: 10001;
+  padding: 0.25rem;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(10px);
-  opacity: 0;
-  visibility: hidden;
-  transform: translateX(-10px);
+  display: none;
 }
 
 .submenu.active {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(0);
+  display: flex;
   pointer-events: auto;
 }
 
-/* Handle submenu positioning when near screen edges */
 .submenu.flip-horizontal {
   left: auto;
   right: 100%;
   margin-left: 0;
   margin-right: -1px;
-  transform: translateX(10px);
-}
-
-.submenu.flip-horizontal.active {
-  transform: translateX(0);
 }
 
 .submenu.flip-vertical {
   top: auto;
   bottom: 0;
 }
-/* Input styles for elevation and bars */
 .elevation-input,
 .bar-input {
   background: rgba(255, 255, 255, 0.1);
@@ -240,7 +263,6 @@
   cursor: not-allowed;
 }
 
-/* Search input container */
 .search-container {
   display: flex;
   align-items: center;
@@ -266,55 +288,35 @@
   font-weight: 400;
 }
 
-/* Status Effects specific styles (forced vertical list) */
-.status-effects {
-  min-width: 220px;
-  display: flex;
-  flex-direction: column;
+/* Submenu content layout */
+.submenu {
   flex-wrap: nowrap;
   align-items: stretch;
   gap: 2px;
 }
 
-/* Removed green active styles - using default red selected style for all states */
+/* Submenu-specific min-width overrides */
+.status-effects {
+  min-width: 220px;
+}
 
-/* Movement Actions specific styles */
 .movement-actions {
   min-width: 160px;
 }
 
-/* Animation for submenu appearance */
-@keyframes submenuFadeIn {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+.conditional-visibility {
+  min-width: 200px;
+  max-height: 350px;
 }
 
-@keyframes submenuFadeOut {
-  from {
-    opacity: 1;
-    transform: translateX(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
+/* Larger icon for token portraits in conditional visibility */
+.conditional-visibility-token .menu-icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  object-fit: cover;
 }
 
-.submenu.animating-in {
-  animation: submenuFadeIn 0.2s ease-out forwards;
-}
-
-.submenu.animating-out {
-  animation: submenuFadeOut 0.15s ease-in forwards;
-}
-
-/* Theme compatibility */
 .theme-dark #token-hud,
 body.theme-dark #token-hud {
   --hud-icon-filter: none;
@@ -342,7 +344,6 @@ body.theme-light #token-hud {
   color: #333;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
   #token-hud {
     min-width: 180px;
@@ -354,13 +355,11 @@ body.theme-light #token-hud {
   }
 }
 
-/* Focus indicators for accessibility */
 .menu-item:focus {
   outline: 2px solid rgba(0, 123, 255, 0.6);
   outline-offset: -1px;
 }
 
-/* High contrast mode support */
 @media (prefers-contrast: high) {
   #token-hud {
     border-width: 2px;
@@ -376,21 +375,6 @@ body.theme-light #token-hud {
   }
 }
 
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  .submenu,
-  .submenu-arrow,
-  .menu-item {
-    transition: none;
-  }
-
-  .submenu.animating-in,
-  .submenu.animating-out {
-    animation: none;
-  }
-}
-
-/* Scrollbars for submenus */
 .submenu::-webkit-scrollbar {
   width: 6px;
 }
