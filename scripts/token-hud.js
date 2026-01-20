@@ -234,7 +234,6 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
   /** @override */
   static DEFAULT_OPTIONS = {
     id: "token-hud",
-    classes: ["hud", "token-hud", "token-tags-hud"],
     actions: {
       togglePalette: TokenTagsHUD.prototype._onTogglePalette,
       effect: {
@@ -1182,73 +1181,11 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
   }
 }
 
-// Module initialization
-Hooks.once("init", () => {
-  // Register the availableTags setting
-  game.settings.register("token-tags", "availableTags", {
-    name: "Available Tags",
-    hint: "Predefined tags available for tokens",
-    scope: "world",
-    config: false,
-    type: Array,
-    default: [
-      {
-        id: "important",
-        name: "Important",
-        icon: "fas fa-exclamation-triangle",
-        category: "priority",
-        description: "Marks this token as important",
-        color: "#ff6b35",
-      },
-      {
-        id: "ally",
-        name: "Ally",
-        icon: "fas fa-shield-alt",
-        category: "faction",
-        description: "Friendly unit",
-        color: "#4ecdc4",
-      },
-      {
-        id: "enemy",
-        name: "Enemy",
-        icon: "fas fa-skull",
-        category: "faction",
-        description: "Hostile unit",
-        color: "#ff4757",
-      },
-      {
-        id: "boss",
-        name: "Boss",
-        icon: "fas fa-crown",
-        category: "priority",
-        description: "Boss enemy",
-        color: "#ff3838",
-      },
-      {
-        id: "quest",
-        name: "Quest",
-        icon: "fas fa-scroll",
-        category: "general",
-        description: "Quest-related NPC",
-        color: "#ffa502",
-      },
-      {
-        id: "merchant",
-        name: "Merchant",
-        icon: "fas fa-coins",
-        category: "general",
-        description: "Merchant or trader",
-        color: "#f39c12",
-      },
-    ],
-  });
-});
-
 // Preload templates and register HUD class
 Hooks.once("setup", () => {
   // Preload templates using new namespaced method
   foundry.applications.handlebars.loadTemplates([
-    "modules/token-tags/templates/TokenHud.hbs",
+    "modules/token-hud-2e/templates/TokenHUD.hbs",
   ]);
 
   // Register the custom TokenHUD class once
