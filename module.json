@@ -26,7 +26,7 @@
       "flags": {}
     }
   ],
-  "manifest": "https://raw.githubusercontent.com/mattermill/token-hud-2e/refs/heads/main/module.json",
+  "manifest": "https://raw.githubusercontent.com/mattermill/token-hud-2e/main/module.json",
   "scripts": ["scripts/token-hud.js"],
   "styles": ["styles/style.css"]
 }
