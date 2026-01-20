@@ -3,9 +3,9 @@
   "title": "Token HUD 2e",
   "url": "https://github.com/mattermill/token-hud-2e",
   "description": "Interface improvements for Pathfinder 2e's token HUD.",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "compatibility": {
-    "minimum": "10",
+    "minimum": "12",
     "verified": "13"
   },
   "relationships": {
@@ -27,7 +27,7 @@
     }
   ],
   "manifest": "https://raw.githubusercontent.com/mattermill/token-hud-2e/main/module.json",
-  "download": "https://github.com/mattermill/token-hud-2e/archive/refs/heads/main.zip",
+  "download": "https://github.com/mattermill/token-hud-2e/releases/latest/download/token-hud-2e.zip",
   "scripts": ["scripts/token-hud.js"],
   "styles": ["styles/style.css"]
 }
