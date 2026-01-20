@@ -254,7 +254,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
   static PARTS = {
     hud: {
       root: true,
-      template: "modules/token-hud-2e/templates/TokenHud.hbs",
+      template: "modules/token-hud-2e/templates/TokenHUD.hbs",
     },
   };
 
