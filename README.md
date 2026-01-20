@@ -2,7 +2,7 @@
 
 Foundry VTT token HUD improvements for [foundryvtt/pf2e](https://github.com/foundryvtt/pf2e).
 
-
+![Apply Conditions](Screenshot.png)
 
 ## Usage
 ### Applying Status Effects
@@ -26,6 +26,3 @@ Paste the following manifest URL into Foundry's "Install Module" dialog:
  ```
  https://raw.githubusercontent.com/mattermill/token-hud-2e/refs/heads/main/module.json
  ```
-
-## Screenshots
-![Apply Conditions](Screenshot.png)
