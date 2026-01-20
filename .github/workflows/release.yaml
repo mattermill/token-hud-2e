@@ -15,6 +15,7 @@ jobs:
         run: |
           zip -r token-hud-2e.zip . \
             -x "*.git*" \
+            -x "*.DS_Store" \
             -x "node_modules/*" \
             -x ".github/*"
 
