@@ -3,7 +3,7 @@
   "title": "Token HUD 2e",
   "url": "https://github.com/mattermill/token-hud-2e",
   "description": "Interface improvements for Pathfinder 2e's token HUD.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "compatibility": {
     "minimum": "12",
     "verified": "13"
