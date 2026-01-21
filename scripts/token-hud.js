@@ -77,7 +77,9 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
     } else if (openSubmenu?.classList.contains("conditional-visibility")) {
       openSubmenuClass = "conditional-visibility";
     }
-    const searchValue = openSubmenu?.querySelector("[data-effect-search='true']")?.value;
+    const searchInput = openSubmenu?.querySelector("[data-effect-search='true']");
+    const searchValue = searchInput?.value;
+    const searchWasFocused = searchInput && document.activeElement === searchInput;
     const selectedItem = openSubmenu?.querySelector(".submenu-item.selected");
     const selectedStatusId = selectedItem?.dataset?.statusId;
     const scrollTop = openSubmenu?.scrollTop ?? 0;
@@ -105,6 +107,10 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
               : Array.from(items).find((el) => el.style.display !== "none");
             if (itemToSelect && itemToSelect.style.display !== "none") {
               itemToSelect.classList.add("selected");
+            }
+            // Restore focus to search input if it was focused before render
+            if (searchWasFocused) {
+              search.focus({ preventScroll: true });
             }
           }
         }
@@ -253,7 +259,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
       locked: this.document.locked,
       ...this._getConditionalVisibilityData(),
       inCombat: this.document.inCombat,
-      canToggleCombat: game.combat !== null,
+      canToggleCombat: game.combat !== null || !this.document.inCombat,
       combatClass: this.document.inCombat ? "active" : "",
       targetClass: game.user.targets.has(this.object) ? "active" : "",
       isGM: game.user.isGM,
@@ -289,18 +295,18 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
           if (condition.value !== undefined && typeof condition.value === "number") status.value = condition.value;
         }
       }
-    } else {
-      const activeEffects = this.actor?.effects || [];
-      for (const effect of activeEffects) {
-        for (const statusId of effect.statuses) {
-          const status = choices[statusId];
-          if (!status) continue;
-          if (status._id) { if (status._id !== effect.id) continue; }
-          else { if (effect.statuses.size !== 1) continue; }
-          status.isActive = true;
-          if (effect.getFlag("core", "overlay")) status.isOverlay = true;
-          break;
-        }
+    }
+    // Also check ActiveEffects for non-PF2e status effects (like "dead")
+    const activeEffects = this.actor?.effects || [];
+    for (const effect of activeEffects) {
+      for (const statusId of effect.statuses) {
+        const status = choices[statusId];
+        if (!status || status.isActive) continue;
+        if (status._id) { if (status._id !== effect.id) continue; }
+        else { if (effect.statuses.size !== 1) continue; }
+        status.isActive = true;
+        if (effect.getFlag("core", "overlay")) status.isOverlay = true;
+        break;
       }
     }
     return Object.values(choices).map((status) => ({
@@ -513,7 +519,9 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
         }
       }
     } else {
-      await this.actor.toggleStatusEffect(statusId, { active: !target.classList.contains("active"), overlay: isRightClick });
+      // For non-PF2e status effects, Dead defaults to overlay (big skull)
+      const useOverlay = (statusId === "dead") ? !isRightClick : isRightClick;
+      await this.actor.toggleStatusEffect(statusId, { active: !target.classList.contains("active"), overlay: useOverlay });
     }
   }
 
