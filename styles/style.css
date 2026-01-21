@@ -1,106 +1,93 @@
-/* ============================================
-   Token HUD 2e - Styles
-   ============================================
-   Theme-aware styling with CSS custom properties
-   for easy light/dark mode maintenance.
-   ============================================ */
-
-/* ============================================
-   THEME VARIABLES
-   ============================================ */
-
-/* Dark Theme (Default) */
+/* Dark (Default) */
 :root {
   /* Backgrounds */
-  --hud-bg: rgba(0, 0, 0, 0.9);
-  --hud-bg-subtle: rgba(255, 255, 255, 0.05);
-  --hud-bg-hover: rgba(255, 255, 255, 0.1);
-  --hud-bg-hover-strong: rgba(255, 255, 255, 0.15);
-  --hud-bg-input: rgba(255, 255, 255, 0.1);
-  --hud-bg-input-focus: rgba(255, 255, 255, 0.15);
-  --hud-bg-value: rgba(255, 255, 255, 0.15);
-  --hud-bg-btn-hover: rgba(255, 255, 255, 0.25);
+  --ax-th-bg: rgba(0, 0, 0, 0.9);
+  --ax-th-bg-subtle: rgba(255, 255, 255, 0.05);
+  --ax-th-bg-hover: rgba(255, 255, 255, 0.1);
+  --ax-th-bg-hover-strong: rgba(255, 255, 255, 0.15);
+  --ax-th-bg-input: rgba(255, 255, 255, 0.1);
+  --ax-th-bg-input-focus: rgba(255, 255, 255, 0.15);
+  --ax-th-bg-value: rgba(255, 255, 255, 0.15);
+  --ax-th-bg-btn-hover: rgba(255, 255, 255, 0.25);
 
   /* Borders */
-  --hud-border: rgba(255, 255, 255, 0.2);
-  --hud-border-input: rgba(255, 255, 255, 0.25);
-  --hud-border-focus: rgba(0, 123, 255, 0.6);
+  --ax-th-border: rgba(255, 255, 255, 0.2);
+  --ax-th-border-input: rgba(255, 255, 255, 0.25);
+  --ax-th-border-focus: rgba(0, 123, 255, 0.6);
 
   /* Text */
-  --hud-text: #e7d1b1;
-  --hud-text-muted: #d2cdbe;
-  --hud-text-placeholder: rgba(255, 255, 255, 0.5);
+  --ax-th-text: #e7d1b1;
+  --ax-th-text-muted: #d2cdbe;
+  --ax-th-text-placeholder: rgba(255, 255, 255, 0.5);
 
   /* Shadows */
-  --hud-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --hud-shadow-submenu: 0 6px 24px rgba(0, 0, 0, 0.6);
-  --hud-shadow-focus: 0 0 0 2px rgba(0, 123, 255, 0.2);
+  --ax-th-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --ax-th-shadow-submenu: 0 6px 24px rgba(0, 0, 0, 0.6);
+  --ax-th-shadow-focus: 0 0 0 2px rgba(0, 123, 255, 0.2);
 
   /* Separators */
-  --hud-separator: rgba(255, 255, 255, 0.15);
-  --hud-separator-high-contrast: rgba(255, 255, 255, 0.4);
+  --ax-th-separator: rgba(255, 255, 255, 0.15);
+  --ax-th-separator-high-contrast: rgba(255, 255, 255, 0.4);
 
   /* Scrollbar */
-  --hud-scrollbar-track: rgba(255, 255, 255, 0.05);
-  --hud-scrollbar-thumb: rgba(255, 255, 255, 0.2);
-  --hud-scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
+  --ax-th-scrollbar-track: rgba(255, 255, 255, 0.05);
+  --ax-th-scrollbar-thumb: rgba(255, 255, 255, 0.2);
+  --ax-th-scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
 
-  /* Active/Selected State */
-  --hud-active-bg: #5a141e;
-  --hud-active-border: #821e32;
+  /* Active States */
+  --ax-th-active-bg: #5a141e;
+  --ax-th-active-border: #821e32;
 
-  /* Keyboard Selection */
-  --hud-keyboard-outline: rgba(255, 255, 255, 0.3);
+  /* Keyboard */
+  --ax-th-keyboard-outline: rgba(255, 255, 255, 0.3);
 }
 
-/* Light Theme */
+/* Light */
 .theme-light,
 body.theme-light {
   /* Backgrounds */
-  --hud-bg: rgba(255, 255, 255, 0.85);
-  --hud-bg-subtle: rgba(0, 0, 0, 0.03);
-  --hud-bg-hover: rgba(0, 0, 0, 0.08);
-  --hud-bg-hover-strong: rgba(0, 0, 0, 0.12);
-  --hud-bg-input: rgba(0, 0, 0, 0.05);
-  --hud-bg-input-focus: rgba(0, 0, 0, 0.08);
-  --hud-bg-value: rgba(0, 0, 0, 0.1);
-  --hud-bg-btn-hover: rgba(0, 0, 0, 0.15);
+  --ax-th-bg: rgba(255, 255, 255, 0.85);
+  --ax-th-bg-subtle: rgba(0, 0, 0, 0.03);
+  --ax-th-bg-hover: rgba(0, 0, 0, 0.08);
+  --ax-th-bg-hover-strong: rgba(0, 0, 0, 0.12);
+  --ax-th-bg-input: rgba(0, 0, 0, 0.05);
+  --ax-th-bg-input-focus: rgba(0, 0, 0, 0.08);
+  --ax-th-bg-value: rgba(0, 0, 0, 0.1);
+  --ax-th-bg-btn-hover: rgba(0, 0, 0, 0.15);
 
   /* Borders */
-  --hud-border: rgba(0, 0, 0, 0.15);
-  --hud-border-input: rgba(0, 0, 0, 0.2);
-  --hud-border-focus: rgba(0, 123, 255, 0.6);
+  --ax-th-border: rgba(0, 0, 0, 0.15);
+  --ax-th-border-input: rgba(0, 0, 0, 0.2);
+  --ax-th-border-focus: rgba(0, 123, 255, 0.6);
 
   /* Text */
-  --hud-text: rgba(0, 0, 0, 0.85);
-  --hud-text-muted: rgba(0, 0, 0, 0.6);
-  --hud-text-placeholder: rgba(0, 0, 0, 0.4);
+  --ax-th-text: rgba(0, 0, 0, 0.85);
+  --ax-th-text-muted: rgba(0, 0, 0, 0.6);
+  --ax-th-text-placeholder: rgba(0, 0, 0, 0.4);
 
   /* Shadows */
-  --hud-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  --hud-shadow-submenu: 0 6px 24px rgba(0, 0, 0, 0.2);
-  --hud-shadow-focus: 0 0 0 2px rgba(0, 123, 255, 0.2);
+  --ax-th-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  --ax-th-shadow-submenu: 0 6px 24px rgba(0, 0, 0, 0.2);
+  --ax-th-shadow-focus: 0 0 0 2px rgba(0, 123, 255, 0.2);
 
   /* Separators */
-  --hud-separator: rgba(0, 0, 0, 0.1);
-  --hud-separator-high-contrast: rgba(0, 0, 0, 0.3);
+  --ax-th-separator: rgba(0, 0, 0, 0.1);
+  --ax-th-separator-high-contrast: rgba(0, 0, 0, 0.3);
 
   /* Scrollbar */
-  --hud-scrollbar-track: rgba(0, 0, 0, 0.05);
-  --hud-scrollbar-thumb: rgba(0, 0, 0, 0.15);
-  --hud-scrollbar-thumb-hover: rgba(0, 0, 0, 0.25);
+  --ax-th-scrollbar-track: rgba(0, 0, 0, 0.05);
+  --ax-th-scrollbar-thumb: rgba(0, 0, 0, 0.15);
+  --ax-th-scrollbar-thumb-hover: rgba(0, 0, 0, 0.25);
 
-  /* Active/Selected State - slightly adjusted for light mode visibility */
-  --hud-active-bg: oklch(0.6119 0.1772 33.08 / 20%);
-  --hud-active-border: #d95035;
+  /* Active States */
+  --ax-th-active-bg: oklch(0.6119 0.1772 33.08 / 20%);
+  --ax-th-active-border: #d95035;
 
-  /* Keyboard Selection */
-  --hud-keyboard-outline: rgba(0, 0, 0, 0.3);
+  /* Keyboard */
+  --ax-th-keyboard-outline: rgba(0, 0, 0, 0.3);
 }
 
-/* ============================================
-   BASE STYLES
-   ============================================ */
+/* Base Styles */
 
 #token-hud {
   overflow: visible;
@@ -118,11 +105,9 @@ body.theme-light {
   box-sizing: border-box;
 }
 
-/* ============================================
-   MENU CONTAINERS
-   ============================================ */
+/* MENU */
 
-.main-menu {
+.ax-th-main-menu {
   position: absolute;
   top: 16%;
   left: calc(100% + 8px);
@@ -130,33 +115,29 @@ body.theme-light {
   padding: 4px;
 }
 
-.main-menu,
-.submenu {
-  background: var(--hud-bg);
-  border: 1px solid var(--hud-border);
+.ax-th-main-menu,
+.ax-th-submenu {
+  background: var(--ax-th-bg);
+  border: 1px solid var(--ax-th-border);
   border-radius: 8px;
-  box-shadow: var(--hud-shadow);
+  box-shadow: var(--ax-th-shadow);
   backdrop-filter: blur(10px);
   display: flex;
   flex-direction: column;
-  color: var(--hud-text);
+  color: var(--ax-th-text);
 }
 
-.menu-wrapper {
+.ax-th-menu-wrapper {
   position: relative;
 }
 
-/* ============================================
-   MENU ITEMS
-   ============================================ */
-
-.menu-title {
+.ax-th-menu-title {
   padding: 0.5rem;
-  color: var(--hud-text);
+  color: var(--ax-th-text);
 }
 
-.menu-item,
-.submenu-item {
+.ax-th-menu-item,
+.ax-th-submenu-item {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -171,54 +152,53 @@ body.theme-light {
   border-radius: 4px;
   margin: 1px 0;
   border: 1px solid transparent;
-  color: var(--hud-text);
+  color: var(--ax-th-text);
 }
 
-.menu-item:hover:not(.active),
-.action-icon:hover:not(.active),
-.menu-item.submenu-trigger:hover:not(.active) {
-  background-color: var(--hud-bg-hover);
+.ax-th-menu-item:hover:not(.ax-th-active),
+.ax-th-action-icon:hover:not(.ax-th-active),
+.ax-th-menu-item.ax-th-submenu-trigger:hover:not(.ax-th-active) {
+  background-color: var(--ax-th-bg-hover);
 }
 
-.menu-item.active,
-.action-icon.active,
-.menu-item.selected,
-.menu-item.submenu-trigger.expanded,
-.movement-actions .menu-item.active,
-.status-effects .menu-item.selected {
-  background-color: var(--hud-active-bg);
-  border: 1px solid var(--hud-active-border);
+.ax-th-menu-item.ax-th-active,
+.ax-th-action-icon.ax-th-active,
+.ax-th-menu-item.ax-th-selected,
+.ax-th-menu-item.ax-th-submenu-trigger.ax-th-expanded,
+.ax-th-movement-actions .ax-th-menu-item.ax-th-active,
+.ax-th-status-effects .ax-th-menu-item.ax-th-selected {
+  background-color: var(--ax-th-active-bg);
+  border: 1px solid var(--ax-th-active-border);
   transition: none;
 }
 
-.menu-item.keyboard-selected {
-  background-color: var(--hud-bg-hover);
-  outline: 2px solid var(--hud-keyboard-outline);
+.ax-th-menu-item.ax-th-keyboard-selected {
+  background-color: var(--ax-th-bg-hover);
+  outline: 2px solid var(--ax-th-keyboard-outline);
   outline-offset: -2px;
 }
 
-.menu-item.keyboard-selected:hover {
-  background-color: var(--hud-bg-hover-strong);
+.ax-th-menu-item.ax-th-keyboard-selected:hover {
+  background-color: var(--ax-th-bg-hover-strong);
 }
 
-.submenu-item.effect-control {
+.ax-th-submenu-item.ax-th-effect-control {
   opacity: 1;
 }
 
-.menu-item.submenu-trigger {
+.ax-th-menu-item.ax-th-submenu-trigger {
   position: relative;
 }
 
-.menu-item:focus {
-  outline: 2px solid var(--hud-border-focus);
+.ax-th-menu-item:focus {
+  outline: 2px solid var(--ax-th-border-focus);
   outline-offset: -1px;
 }
 
-/* ============================================
-   MENU ICONS & LABELS
-   ============================================ */
+/* ICONS & LABELS
+*/
 
-.menu-icon {
+.ax-th-menu-icon {
   width: 14px;
   height: 14px;
   margin-right: 10px;
@@ -229,14 +209,14 @@ body.theme-light {
   flex-shrink: 0;
 }
 
-.menu-icon.fa,
-.menu-icon.fas,
-.menu-icon.far {
+.ax-th-menu-icon.fa,
+.ax-th-menu-icon.fas,
+.ax-th-menu-icon.far {
   font-size: 12px;
   pointer-events: none;
 }
 
-.menu-label {
+.ax-th-menu-label {
   flex: 1;
   white-space: nowrap;
   text-align: left;
@@ -245,34 +225,28 @@ body.theme-light {
   font-weight: normal;
   font-size: 12px;
   pointer-events: none;
-  color: var(--hud-text);
+  color: var(--ax-th-text);
 }
 
-.submenu-arrow {
+.ax-th-submenu-arrow {
   margin-left: auto;
   font-size: 10px;
   opacity: 0.7;
   flex-shrink: 0;
   pointer-events: none;
-  color: var(--hud-text-muted);
+  color: var(--ax-th-text-muted);
 }
 
-/* ============================================
-   MENU SEPARATOR
-   ============================================ */
-
-.menu-separator {
+.ax-th-menu-separator {
   height: 1px;
-  background-color: var(--hud-separator);
+  background-color: var(--ax-th-separator);
   margin: 2px 0;
   pointer-events: none;
 }
 
-/* ============================================
-   SUBMENUS
-   ============================================ */
+/* SUBMENUS */
 
-.submenu {
+.ax-th-submenu {
   position: absolute;
   left: 100%;
   top: 0;
@@ -281,7 +255,7 @@ body.theme-light {
   overflow-y: auto;
   z-index: 10001;
   padding: 0.25rem;
-  box-shadow: var(--hud-shadow-submenu);
+  box-shadow: var(--ax-th-shadow-submenu);
   backdrop-filter: blur(10px);
   display: none;
   flex-wrap: nowrap;
@@ -289,50 +263,46 @@ body.theme-light {
   gap: 2px;
 }
 
-.submenu.active {
+.ax-th-submenu.ax-th-active {
   display: flex;
   pointer-events: auto;
 }
 
-.submenu.flip-horizontal {
+.ax-th-submenu.ax-th-flip-horizontal {
   left: auto;
   right: 100%;
   margin-left: 0;
   margin-right: -1px;
 }
 
-.submenu.flip-vertical {
+.ax-th-submenu.ax-th-flip-vertical {
   top: auto;
   bottom: 0;
 }
 
-/* Submenu-specific min-width overrides */
-.status-effects {
+.ax-th-status-effects {
   min-width: 220px;
 }
 
-.movement-actions {
+.ax-th-movement-actions {
   min-width: 160px;
 }
 
-.conditional-visibility {
+.ax-th-conditional-visibility {
   min-width: 200px;
   max-height: 350px;
 }
 
-/* Larger icon for token portraits in conditional visibility */
-.conditional-visibility-token .menu-icon {
+.ax-th-conditional-visibility-token .ax-th-menu-icon {
   width: 20px;
   height: 20px;
   border-radius: 3px;
   object-fit: cover;
 }
 
-/* ============================================
-   CONDITION CONTROLS
-   ============================================ */
+/* CONDITIONS */
 
-.condition-controls {
+.ax-th-condition-controls {
   margin-left: auto;
   display: flex;
   align-items: center;
@@ -340,7 +310,7 @@ body.theme-light {
   flex-shrink: 0;
 }
 
-.condition-btn {
+.ax-th-condition-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -350,26 +320,26 @@ body.theme-light {
   border: none;
   border-radius: 3px;
   background: transparent;
-  color: var(--hud-text-muted);
+  color: var(--ax-th-text-muted);
   cursor: pointer;
   pointer-events: auto;
 }
 
-.condition-btn:hover {
-  background: var(--hud-bg-btn-hover);
-  color: var(--hud-text);
+.ax-th-condition-btn:hover {
+  background: var(--ax-th-bg-btn-hover);
+  color: var(--ax-th-text);
 }
 
-.condition-btn i {
+.ax-th-condition-btn i {
   font-size: 9px;
   pointer-events: none;
 }
 
-.condition-value {
+.ax-th-condition-value {
   font-size: 11px;
   font-weight: bold;
-  color: var(--hud-text);
-  background: var(--hud-bg-value);
+  color: var(--ax-th-text);
+  background: var(--ax-th-bg-value);
   border-radius: 3px;
   padding: 2px 6px;
   min-width: 20px;
@@ -378,11 +348,11 @@ body.theme-light {
   pointer-events: none;
 }
 
-.condition-controls .condition-value {
+.ax-th-condition-controls .ax-th-condition-value {
   margin-left: 0;
 }
 
-.condition-active-indicator {
+.ax-th-condition-active-indicator {
   margin-left: auto;
   display: flex;
   align-items: center;
@@ -393,23 +363,21 @@ body.theme-light {
   pointer-events: none;
 }
 
-.condition-active-indicator i {
+.ax-th-condition-active-indicator i {
   font-size: 10px;
-  color: var(--hud-text);
+  color: var(--ax-th-text);
 }
 
-/* ============================================
-   INPUT FIELDS
-   ============================================ */
+/* INPUTS */
 
-.elevation-input,
-.bar-input {
-  background: var(--hud-bg-input);
-  border: 1px solid var(--hud-border-input);
+.ax-th-elevation-input,
+.ax-th-bar-input {
+  background: var(--ax-th-bg-input);
+  border: 1px solid var(--ax-th-border-input);
   box-shadow: none !important;
   border-radius: 4px;
   padding: 3px 6px;
-  color: var(--hud-text);
+  color: var(--ax-th-text);
   font-size: 11px;
   width: 45px;
   height: 22px;
@@ -420,73 +388,67 @@ body.theme-light {
   text-align: center;
 }
 
-.elevation-input:focus,
-.bar-input:focus {
+.ax-th-elevation-input:focus,
+.ax-th-bar-input:focus {
   outline: none;
-  border-color: var(--hud-border-focus);
-  background: var(--hud-bg-input-focus);
-  box-shadow: var(--hud-shadow-focus);
+  border-color: var(--ax-th-border-focus);
+  background: var(--ax-th-bg-input-focus);
+  box-shadow: var(--ax-th-shadow-focus);
 }
 
-.elevation-input:disabled,
-.bar-input:disabled {
+.ax-th-elevation-input:disabled,
+.ax-th-bar-input:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* ============================================
-   SEARCH
-   ============================================ */
+/* SEARCH */
 
-.search-container {
+.ax-th-search-container {
   display: flex;
   align-items: center;
   border-radius: 3px;
   margin-bottom: 2px;
 }
 
-.effect-search-input {
+.ax-th-effect-search-input {
   flex: 1;
   background: none;
   border: none;
   outline: none;
-  color: var(--hud-text);
+  color: var(--ax-th-text);
   font-size: 11px;
   font-family: var(--font-primary);
   text-align: left;
   box-shadow: none !important;
 }
 
-.effect-search-input::placeholder {
-  color: var(--hud-text-placeholder);
+.ax-th-effect-search-input::placeholder {
+  color: var(--ax-th-text-placeholder);
   font-weight: 400;
 }
 
-/* ============================================
-   SCROLLBAR STYLING
-   ============================================ */
+/* SCROLLBARS */
 
-.submenu::-webkit-scrollbar {
+.ax-th-submenu::-webkit-scrollbar {
   width: 6px;
 }
 
-.submenu::-webkit-scrollbar-track {
-  background: var(--hud-scrollbar-track);
+.ax-th-submenu::-webkit-scrollbar-track {
+  background: var(--ax-th-scrollbar-track);
   border-radius: 3px;
 }
 
-.submenu::-webkit-scrollbar-thumb {
-  background: var(--hud-scrollbar-thumb);
+.ax-th-submenu::-webkit-scrollbar-thumb {
+  background: var(--ax-th-scrollbar-thumb);
   border-radius: 3px;
 }
 
-.submenu::-webkit-scrollbar-thumb:hover {
-  background: var(--hud-scrollbar-thumb-hover);
+.ax-th-submenu::-webkit-scrollbar-thumb:hover {
+  background: var(--ax-th-scrollbar-thumb-hover);
 }
 
-/* ============================================
-   RESPONSIVE DESIGN
-   ============================================ */
+/* RESPONSIVE */
 
 @media (max-width: 768px) {
   #token-hud {
@@ -494,27 +456,25 @@ body.theme-light {
     max-width: 250px;
   }
 
-  .menu-item {
+  .ax-th-menu-item {
     padding: 5px 10px;
     height: 26px;
   }
 }
 
-/* ============================================
-   ACCESSIBILITY - HIGH CONTRAST
-   ============================================ */
+/* ACCESSIBILITY */
 
 @media (prefers-contrast: high) {
   #token-hud {
     border-width: 2px;
   }
 
-  .submenu {
+  .ax-th-submenu {
     border-width: 2px;
   }
 
-  .menu-separator,
-  .submenu-separator {
-    background-color: var(--hud-separator-high-contrast);
+  .ax-th-menu-separator,
+  .ax-th-submenu-separator {
+    background-color: var(--ax-th-separator-high-contrast);
   }
 }

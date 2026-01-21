@@ -1,47 +1,47 @@
 <!-- Main Menu Container -->
-<div class="menu-container main-menu" id="main-menu">
-  <div class="menu-title">{{actorName}}</div>
-  <div class="menu-separator"></div>
+<div class="ax-th-menu-container ax-th-main-menu" id="main-menu">
+  <div class="ax-th-menu-title">{{actorName}}</div>
+  <div class="ax-th-menu-separator"></div>
 
   <!-- Attribute Bars -->
   {{#if displayBar1}}
-  <div class="menu-item bar-item" data-action="focusInput">
-    <i class="fas fa-heart menu-icon"></i>
-    <span class="menu-label">Health</span>
+  <div class="ax-th-menu-item ax-th-bar-item" data-action="focusInput">
+    <i class="fas fa-heart ax-th-menu-icon"></i>
+    <span class="ax-th-menu-label">Health</span>
     {{#if bar1Data.editable}}
     <input
       type="text"
       name="bar1"
       value="{{bar1Data.value}}"
-      class="bar-input"
+      class="ax-th-bar-input"
     />
     {{else}}
     <input
       type="text"
       name="bar1"
       value="{{bar1Data.value}}"
-      class="bar-input"
+      class="ax-th-bar-input"
       disabled
     />
     {{/if}}
   </div>
   {{/if}} {{#if displayBar2}}
-  <div class="menu-item bar-item" data-action="focusInput">
-    <i class="fas fa-bolt menu-icon"></i>
-    <span class="menu-label">Resource</span>
+  <div class="ax-th-menu-item ax-th-bar-item" data-action="focusInput">
+    <i class="fas fa-bolt ax-th-menu-icon"></i>
+    <span class="ax-th-menu-label">Resource</span>
     {{#if bar2Data.editable}}
     <input
       type="text"
       name="bar2"
       value="{{bar2Data.value}}"
-      class="bar-input"
+      class="ax-th-bar-input"
     />
     {{else}}
     <input
       type="text"
       name="bar2"
       value="{{bar2Data.value}}"
-      class="bar-input"
+      class="ax-th-bar-input"
       disabled
     />
     {{/if}}
@@ -49,21 +49,21 @@
   {{/if}}
 
   <!-- Status Effects -->
-  <div class="menu-wrapper">
+  <div class="ax-th-menu-wrapper">
     <div
-      class="menu-item submenu-trigger"
+      class="ax-th-menu-item ax-th-submenu-trigger"
       data-action="togglePalette"
       data-palette="effects"
     >
-      <i class="fa-solid fa-person-rays fas menu-icon"></i>
-      <span class="menu-label">Status Effects</span>
-      <i class="fas fa-chevron-right submenu-arrow"></i>
+      <i class="fa-solid fa-person-rays fas ax-th-menu-icon"></i>
+      <span class="ax-th-menu-label">Status Effects</span>
+      <i class="fas fa-chevron-right ax-th-submenu-arrow"></i>
     </div>
-    <div class="submenu status-effects" data-palette="effects">
-      <div class="search-container">
+    <div class="ax-th-submenu ax-th-status-effects" data-palette="effects">
+      <div class="ax-th-search-container">
         <input
           type="text"
-          class="effect-search-input"
+          class="ax-th-effect-search-input"
           placeholder="Search effects..."
           data-effect-search="true"
           autocomplete="off"
@@ -71,25 +71,29 @@
       </div>
       {{#each statusEffects as |status|}}
       <div
-        class="menu-item submenu-item effect-control {{status.cssClass}}"
+        class="ax-th-menu-item ax-th-submenu-item ax-th-effect-control {{status.cssClass}}"
         data-action="effect"
         data-status-id="{{status.id}}"
         data-effect-name="{{status.title}}"
       >
         {{#if status.src}}
-        <img src="{{status.src}}" class="menu-icon" alt="{{status.title}}" />
+        <img
+          src="{{status.src}}"
+          class="ax-th-menu-icon"
+          alt="{{status.title}}"
+        />
         {{else}}
-        <i class="fas fa-star menu-icon" inert></i>
+        <i class="fas fa-star ax-th-menu-icon" inert></i>
         {{/if}}
-        <span class="menu-label"
+        <span class="ax-th-menu-label"
           >{{status.title}} {{#if status.isValued}}{{#if
           status.value}}{{status.value}}{{/if}}{{/if}}</span
         >
         {{#if status.isValued}}
-        <span class="condition-controls">
+        <span class="ax-th-condition-controls">
           {{#if status.value}}
           <div
-            class="condition-btn decrement"
+            class="ax-th-condition-btn ax-th-decrement"
             data-action="decrementEffect"
             data-status-id="{{status.id}}"
             title="Decrease"
@@ -98,7 +102,7 @@
           </div>
           {{/if}}
           <div
-            class="condition-btn increment"
+            class="ax-th-condition-btn ax-th-increment"
             data-action="incrementEffect"
             data-status-id="{{status.id}}"
             title="Increase"
@@ -107,7 +111,7 @@
           </div>
         </span>
         {{else if status.isActive}}
-        <span class="condition-active-indicator">
+        <span class="ax-th-condition-active-indicator">
           <i class="fas fa-check"></i>
         </span>
         {{/if}}
@@ -117,48 +121,48 @@
   </div>
 
   {{#if isGM}}
-  <div class="menu-separator"></div>
-  <div class="menu-wrapper">
+  <div class="ax-th-menu-separator"></div>
+  <div class="ax-th-menu-wrapper">
     <div
-      class="menu-item submenu-trigger {{conditionalVisibilityClass}} effect-control"
+      class="ax-th-menu-item ax-th-submenu-trigger {{conditionalVisibilityClass}} ax-th-effect-control"
       data-action="visibility"
       data-palette="conditional-visibility"
     >
       {{#if conditionalVisibilityActive}}
-      <i class="fa-solid fa-eye-slash fas menu-icon"></i>
+      <i class="fa-solid fa-eye-slash fas ax-th-menu-icon"></i>
       {{else}}
-      <i class="fa-solid fa-eye fas menu-icon"></i>
+      <i class="fa-solid fa-eye fas ax-th-menu-icon"></i>
       {{/if}}
-      <span class="menu-label">{{conditionalVisibilityLabel}}</span>
-      <i class="fas fa-chevron-right submenu-arrow"></i>
+      <span class="ax-th-menu-label">{{conditionalVisibilityLabel}}</span>
+      <i class="fas fa-chevron-right ax-th-submenu-arrow"></i>
     </div>
     <div
-      class="submenu conditional-visibility"
+      class="ax-th-submenu ax-th-conditional-visibility"
       data-palette="conditional-visibility"
     >
       <div
-        class="menu-item submenu-item {{#if (or hiddenFromAll hiddenFromAllActors)}}active{{/if}}"
+        class="ax-th-menu-item ax-th-submenu-item {{#if (or hiddenFromAll hiddenFromAllActors)}}ax-th-active{{/if}}"
         data-action="conditionalVisibilityAll"
       >
-        <i class="fa-solid fa-users fas menu-icon"></i>
-        <span class="menu-label">All</span>
+        <i class="fa-solid fa-users fas ax-th-menu-icon"></i>
+        <span class="ax-th-menu-label">All</span>
         {{#if (or hiddenFromAll hiddenFromAllActors)}}
-        <span class="condition-active-indicator">
+        <span class="ax-th-condition-active-indicator">
           <i class="fas fa-check"></i>
         </span>
         {{/if}}
       </div>
-      <div class="menu-separator"></div>
+      <div class="ax-th-menu-separator"></div>
       {{#each conditionalVisibilityActors as |actor|}}
       <div
-        class="menu-item submenu-item conditional-visibility-token {{actor.cssClass}}"
+        class="ax-th-menu-item ax-th-submenu-item ax-th-conditional-visibility-token {{actor.cssClass}}"
         data-action="conditionalVisibilityToken"
         data-actor-id="{{actor.id}}"
       >
-        <img src="{{actor.img}}" class="menu-icon" alt="{{actor.name}}" />
-        <span class="menu-label">{{actor.name}}</span>
+        <img src="{{actor.img}}" class="ax-th-menu-icon" alt="{{actor.name}}" />
+        <span class="ax-th-menu-label">{{actor.name}}</span>
         {{#if actor.isHidden}}
-        <span class="condition-active-indicator">
+        <span class="ax-th-condition-active-indicator">
           <i class="fas fa-eye-slash"></i>
         </span>
         {{/if}}
@@ -166,48 +170,52 @@
       {{/each}}
     </div>
   </div>
-  <div class="menu-separator"></div>
+  <div class="ax-th-menu-separator"></div>
 
   <!-- Combat and Target -->
   {{#if canToggleCombat}}
-  <div class="menu-item {{combatClass}}" data-action="combat">
-    <i class="fa-solid fa-swords fas menu-icon"></i>
+  <div class="ax-th-menu-item {{combatClass}}" data-action="combat">
+    <i class="fa-solid fa-swords fas ax-th-menu-icon"></i>
     {{#if inCombat}}
-    <span class="menu-label">In Combat</span>
+    <span class="ax-th-menu-label">In Combat</span>
     {{else}}
-    <span class="menu-label">Add to Combat</span>
+    <span class="ax-th-menu-label">Add to Combat</span>
     {{/if}}
   </div>
   {{/if}} {{/if}}
 
-  <div class="menu-item {{targetClass}}" data-action="target">
-    <i class="fa fa-solid fa-crosshairs-simple menu-icon"></i>
-    <span class="menu-label">Target</span>
+  <div class="ax-th-menu-item {{targetClass}}" data-action="target">
+    <i class="fa fa-solid fa-crosshairs-simple ax-th-menu-icon"></i>
+    <span class="ax-th-menu-label">Target</span>
   </div>
 
-  <div class="menu-separator"></div>
+  <div class="ax-th-menu-separator"></div>
 
   <!-- Layer Controls -->
-  <div class="menu-item bar-item" data-action="sort" data-direction="up">
-    <i class="fa-solid fa-arrow-up fas menu-icon" inert></i>
-    <span class="menu-label">Bring to Front</span>
+  <div
+    class="ax-th-menu-item ax-th-bar-item"
+    data-action="sort"
+    data-direction="up"
+  >
+    <i class="fa-solid fa-arrow-up fas ax-th-menu-icon" inert></i>
+    <span class="ax-th-menu-label">Bring to Front</span>
   </div>
 
-  <div class="menu-item" data-action="sort" data-direction="down">
-    <i class="fa-solid fa-arrow-down fas menu-icon" inert></i>
-    <span class="menu-label">Send to Back</span>
+  <div class="ax-th-menu-item" data-action="sort" data-direction="down">
+    <i class="fa-solid fa-arrow-down fas ax-th-menu-icon" inert></i>
+    <span class="ax-th-menu-label">Send to Back</span>
   </div>
 
   <!-- Elevation Control -->
-  <div class="menu-item elevation-item" data-action="focusInput">
-    <i class="fas fa-angle-up menu-icon"></i>
-    <span class="menu-label">Elevation</span>
+  <div class="ax-th-menu-item ax-th-elevation-item" data-action="focusInput">
+    <i class="fas fa-angle-up ax-th-menu-icon"></i>
+    <span class="ax-th-menu-label">Elevation</span>
     {{#if (or locked (and isGamePaused (not isGM)))}}
     <input
       type="text"
       name="elevation"
       value="{{elevation}}"
-      class="elevation-input"
+      class="ax-th-elevation-input"
       disabled
     />
     {{else}}
@@ -215,20 +223,20 @@
       type="text"
       name="elevation"
       value="{{elevation}}"
-      class="elevation-input"
+      class="ax-th-elevation-input"
     />
     {{/if}}
   </div>
 
   {{#if canConfigure}}
-  <div class="menu-separator"></div>
-  <div class="menu-item" data-action="config">
-    <i class="fa-solid fa-gear fas menu-icon" inert></i>
-    <span class="menu-label">Configure</span>
+  <div class="ax-th-menu-separator"></div>
+  <div class="ax-th-menu-item" data-action="config">
+    <i class="fa-solid fa-gear fas ax-th-menu-icon" inert></i>
+    <span class="ax-th-menu-label">Configure</span>
   </div>
   {{/if}}
 </div>
 <!-- End Main Menu Container -->
 
 <!-- Movement Menu Container -->
-<div class="menu-container movement-menu" id="movement-menu"></div>
+<div class="ax-th-menu-container ax-th-movement-menu" id="movement-menu"></div>
