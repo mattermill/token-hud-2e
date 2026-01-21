@@ -50,6 +50,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
       target: TokenTagsHUD.prototype._onToggleTarget,
       sort: TokenTagsHUD.prototype._onSort,
       config: TokenTagsHUD.prototype._onConfig,
+      focusInput: TokenTagsHUD.prototype._onFocusInput,
     },
   };
 
@@ -133,6 +134,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
     html.on("focusout", ".bar-input, .elevation-input", this._onInputBlur.bind(this));
     html.on("keydown", ".bar-input, .elevation-input", this._onInputKeydown.bind(this));
     html.on("keydown", this._onMainMenuKeydown.bind(this));
+
     html.on("mouseenter", ".menu-item.submenu-trigger", this._onSubmenuEnter.bind(this));
     html.on("mouseleave", ".menu-item.submenu-trigger", this._onSubmenuLeave.bind(this));
     html.on("mouseenter", ".submenu", this._onSubmenuContentEnter.bind(this));
@@ -150,6 +152,14 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
 
   _onInputKeydown(event) {
     if (event.key === "Escape") { event.currentTarget.blur(); event.preventDefault(); }
+  }
+
+  _onFocusInput(event, target) {
+    const input = target.querySelector("input");
+    if (input && !input.disabled) {
+      input.focus();
+      input.select();
+    }
   }
 
   _onEffectSearchInput(event) {
@@ -571,8 +581,12 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
     if (!game.user.isGM) { ui.notifications.warn("Only GMs can toggle token visibility"); return; }
     const isRightClick = event.button === 2;
     if (isRightClick) {
-      await this.document.unsetFlag("token-hud-2e", "conditional-visibility-actors");
-      if (this.document.hidden) await this.document.update({ hidden: false });
+      const tokenDocs = canvas.tokens.controlled.map((t) => t.document);
+      if (!this.object.controlled) tokenDocs.push(this.document);
+      for (const doc of tokenDocs) {
+        await doc.unsetFlag("token-hud-2e", "conditional-visibility-actors");
+        if (doc.hidden) await doc.update({ hidden: false });
+      }
       canvas.perception.update({ refreshVision: true });
       this.render();
     } else {
@@ -590,16 +604,24 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
     const isRightClick = event.button === 2;
     const { conditionalVisibilityActors, hiddenFromAllActors } = this._getConditionalVisibilityData();
     const allActorIds = conditionalVisibilityActors.map((a) => a.id);
+    const tokenDocs = canvas.tokens.controlled.map((t) => t.document);
+    if (!this.object.controlled) tokenDocs.push(this.document);
     if (isRightClick) {
-      await this.document.unsetFlag("token-hud-2e", "conditional-visibility-actors");
-      if (this.document.hidden) await this.document.update({ hidden: false });
+      for (const doc of tokenDocs) {
+        await doc.unsetFlag("token-hud-2e", "conditional-visibility-actors");
+        if (doc.hidden) await doc.update({ hidden: false });
+      }
       canvas.perception.update({ refreshVision: true });
     } else {
       if (hiddenFromAllActors || this.document.hidden) {
-        await this.document.unsetFlag("token-hud-2e", "conditional-visibility-actors");
-        if (this.document.hidden) await this.document.update({ hidden: false });
+        for (const doc of tokenDocs) {
+          await doc.unsetFlag("token-hud-2e", "conditional-visibility-actors");
+          if (doc.hidden) await doc.update({ hidden: false });
+        }
       } else {
-        await this.document.setFlag("token-hud-2e", "conditional-visibility-actors", allActorIds);
+        for (const doc of tokenDocs) {
+          await doc.setFlag("token-hud-2e", "conditional-visibility-actors", allActorIds);
+        }
       }
       canvas.perception.update({ refreshVision: true });
     }
@@ -611,17 +633,23 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
     if (!game.user.isGM) { ui.notifications.warn("Only GMs can toggle token visibility"); return; }
     const actorId = target.dataset.actorId;
     const isRightClick = event.button === 2;
-    let flags = this.document.getFlag("token-hud-2e", "conditional-visibility-actors") ?? [];
-    const isCurrentlyHidden = flags.includes(actorId);
-    if (isRightClick) {
-      if (isCurrentlyHidden) flags = flags.filter((id) => id !== actorId);
-    } else {
-      if (!isCurrentlyHidden) flags.push(actorId);
-      else flags = flags.filter((id) => id !== actorId);
+    const tokenDocs = canvas.tokens.controlled.map((t) => t.document);
+    if (!this.object.controlled) tokenDocs.push(this.document);
+    // Use the primary document's state to determine the toggle action
+    let primaryFlags = this.document.getFlag("token-hud-2e", "conditional-visibility-actors") ?? [];
+    const isCurrentlyHidden = primaryFlags.includes(actorId);
+    for (const doc of tokenDocs) {
+      let flags = doc.getFlag("token-hud-2e", "conditional-visibility-actors") ?? [];
+      if (isRightClick) {
+        if (isCurrentlyHidden) flags = flags.filter((id) => id !== actorId);
+      } else {
+        if (!isCurrentlyHidden && !flags.includes(actorId)) flags.push(actorId);
+        else if (isCurrentlyHidden) flags = flags.filter((id) => id !== actorId);
+      }
+      await doc.setFlag("token-hud-2e", "conditional-visibility-actors", flags);
+      if (doc.hidden) await doc.update({ hidden: false });
     }
-    await this.document.setFlag("token-hud-2e", "conditional-visibility-actors", flags);
-    if (this.document.hidden) await this.document.update({ hidden: false });
-    else canvas.perception.update({ refreshVision: true });
+    canvas.perception.update({ refreshVision: true });
     this.render();
   }
 
