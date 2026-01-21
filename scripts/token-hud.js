@@ -133,7 +133,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
     super.activateListeners(html);
     html.on("focusout", ".bar-input, .elevation-input", this._onInputBlur.bind(this));
     html.on("keydown", ".bar-input, .elevation-input", this._onInputKeydown.bind(this));
-    html.on("keydown", this._onMainMenuKeydown.bind(this));
+    html.on("keydown", ".submenu", this._onSubmenuKeydown.bind(this));
 
     html.on("mouseenter", ".menu-item.submenu-trigger", this._onSubmenuEnter.bind(this));
     html.on("mouseleave", ".menu-item.submenu-trigger", this._onSubmenuLeave.bind(this));
@@ -177,6 +177,12 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
   _onEffectSearchKeydown(event) {
     const submenu = this.element?.querySelector(".submenu.status-effects");
     if (!submenu) return;
+    if (event.key === "Escape") {
+      const trigger = submenu.previousElementSibling;
+      this._hideSubmenu(trigger, submenu);
+      // Allow the default Escape behavior (token deselection) to proceed
+      return;
+    }
     const visible = Array.from(submenu.querySelectorAll(".submenu-item.effect-control")).filter((el) => el.style.display !== "none");
     if (!visible.length) return;
     let currentIndex = visible.findIndex((el) => el.classList.contains("selected"));
@@ -204,6 +210,16 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
           this._onToggleEffect({ button: 0, preventDefault() {} }, target);
           event.preventDefault();
         }
+      }
+    }
+  }
+
+  _onSubmenuKeydown(event) {
+    if (event.key === "Escape") {
+      const submenu = event.currentTarget.closest(".submenu");
+      if (submenu) {
+        const trigger = submenu.previousElementSibling;
+        this._hideSubmenu(trigger, submenu);
       }
     }
   }
@@ -306,7 +322,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
         }
       }
     }
-    // Also check ActiveEffects for non-PF2e status effects (like "dead")
+    // Check ActiveEffects for non-2e status effects
     const activeEffects = this.actor?.effects || [];
     for (const effect of activeEffects) {
       for (const statusId of effect.statuses) {
