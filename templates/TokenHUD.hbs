@@ -116,9 +116,8 @@
     </div>
   </div>
 
-  <div class="menu-separator"></div>
-
   {{#if isGM}}
+  <div class="menu-separator"></div>
   <div class="menu-wrapper">
     <div
       class="menu-item submenu-trigger {{conditionalVisibilityClass}} effect-control"
@@ -167,8 +166,6 @@
       {{/each}}
     </div>
   </div>
-  {{/if}}
-
   <div class="menu-separator"></div>
 
   <!-- Combat and Target -->
@@ -181,7 +178,7 @@
     <span class="menu-label">Add to Combat</span>
     {{/if}}
   </div>
-  {{/if}}
+  {{/if}} {{/if}}
 
   <div class="menu-item {{targetClass}}" data-action="target">
     <i class="fa fa-solid fa-crosshairs-simple menu-icon"></i>
