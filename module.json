@@ -3,7 +3,7 @@
   "title": "Axeom HUD PF2e",
   "url": "https://github.com/mattermill/axeom-hud-pf2e",
   "description": "Interface improvements for Pathfinder 2e's token HUD.",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "compatibility": {
     "minimum": "12",
     "verified": "13"
