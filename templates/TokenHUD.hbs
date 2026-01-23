@@ -46,8 +46,13 @@
     />
     {{/if}}
   </div>
-  {{/if}}
-
+  {{/if}} {{#if isPartyToken}}
+  <!-- Party Token Clown Car (Deposit/Retrieve PC Tokens) -->
+  <div class="ax-th-menu-item" data-action="clownCar">
+    <i class="fa-solid {{clownCarIcon}} fas ax-th-menu-icon"></i>
+    <span class="ax-th-menu-label">{{clownCarLabel}}</span>
+  </div>
+  {{else}}
   <!-- Status Effects -->
   <div class="ax-th-menu-wrapper">
     <div
@@ -119,8 +124,7 @@
       {{/each}}
     </div>
   </div>
-
-  {{#if isGM}}
+  {{/if}} {{#if isGM}}
   <div class="ax-th-menu-separator"></div>
   <div class="ax-th-menu-wrapper">
     <div
@@ -173,7 +177,19 @@
   <div class="ax-th-menu-separator"></div>
 
   <!-- Combat and Target -->
-  {{#if canToggleCombat}}
+  {{#if canToggleCombat}} {{#if isPartyToken}}
+  <div
+    class="ax-th-menu-item {{#if partyInCombat}}ax-th-active{{/if}}"
+    data-action="combat"
+  >
+    <i class="fa-solid fa-swords fas ax-th-menu-icon"></i>
+    {{#if partyInCombat}}
+    <span class="ax-th-menu-label">In Combat</span>
+    {{else}}
+    <span class="ax-th-menu-label">Add to Combat</span>
+    {{/if}}
+  </div>
+  {{else}}
   <div class="ax-th-menu-item {{combatClass}}" data-action="combat">
     <i class="fa-solid fa-swords fas ax-th-menu-icon"></i>
     {{#if inCombat}}
@@ -182,7 +198,7 @@
     <span class="ax-th-menu-label">Add to Combat</span>
     {{/if}}
   </div>
-  {{/if}} {{/if}}
+  {{/if}} {{/if}} {{/if}}
 
   <div class="ax-th-menu-item {{targetClass}}" data-action="target">
     <i class="fa fa-solid fa-crosshairs-simple ax-th-menu-icon"></i>

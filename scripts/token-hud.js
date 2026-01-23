@@ -47,6 +47,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
       conditionalVisibilityAll: { handler: TokenTagsHUD.prototype._onConditionalVisibilityAll, buttons: [0, 2] },
       conditionalVisibilityToken: { handler: TokenTagsHUD.prototype._onConditionalVisibilityToken, buttons: [0, 2] },
       combat: TokenTagsHUD.prototype._onToggleCombat,
+      clownCar: TokenTagsHUD.prototype._onToggleClownCar,
       target: TokenTagsHUD.prototype._onToggleTarget,
       sort: TokenTagsHUD.prototype._onSort,
       config: TokenTagsHUD.prototype._onConfig,
@@ -180,7 +181,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
     if (event.key === "Escape") {
       const trigger = submenu.previousElementSibling;
       this._hideSubmenu(trigger, submenu);
-      // Allow the default Escape behavior (token deselection) to proceed
+      // Allow the default Escape behavior (token deselection)
       return;
     }
     const visible = Array.from(submenu.querySelectorAll(".ax-th-submenu-item.ax-th-effect-control")).filter((el) => el.style.display !== "none");
@@ -291,6 +292,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
       isGM: game.user.isGM,
       canConfigure: game.user.can("TOKEN_CONFIGURE"),
       isGamePaused: game.paused,
+      ...this._getPartyClownCarData(),
     });
     return finalContext;
   }
@@ -299,7 +301,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
     const choices = {};
     for (const status of CONFIG.statusEffects) {
       if (status.hud === false || (foundry.utils.getType(status.hud) === "Object" && status.hud.actorTypes?.includes(this.document.actor.type) === false)) continue;
-      // Check if this is a PF2e valued condition
+      // Check if this is a pf2e condition
       const pf2eCondition = game.pf2e?.ConditionManager?.getCondition?.(status.id);
       const isValued = pf2eCondition?.system?.value?.isValued ?? false;
       choices[status.id] = {
@@ -389,6 +391,27 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
       conditionalVisibilityClass: conditionalVisibilityActive ? "ax-th-active" : "",
       hiddenFromAll: isHiddenFromAll,
       hiddenFromAllActors,
+    };
+  }
+
+  _isPartyActor(actor) {
+    return actor?.id?.includes("PF2ExPARTY") ?? false;
+  }
+
+  _getPartyClownCarData() {
+    const actor = this.document.actor;
+    if (!this._isPartyActor(actor)) return { isPartyToken: false };
+
+    const memberTokens = actor.members.flatMap(m => m.getActiveTokens(true, true));
+    const memberTokensExist = memberTokens.length > 0;
+    const partyInCombat = memberTokens.some(t => (t.document ?? t).inCombat);
+
+    return {
+      isPartyToken: true,
+      clownCarWillRetrieve: memberTokensExist,
+      clownCarLabel: memberTokensExist ? "Collect Tokens" : "Deposit Tokens",
+      clownCarIcon: memberTokensExist ? "fa-person-walking-arrow-loop-left" : "fa-person-walking-arrow-right",
+      partyInCombat,
     };
   }
 
@@ -670,12 +693,164 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
   }
 
   async _onToggleCombat(event, target) {
+    const actor = this.document.actor;
+
+    if (this._isPartyActor(actor)) {
+      const memberTokens = actor.members.flatMap(m => m.getActiveTokens(true, true));
+      if (memberTokens.length === 0) {
+        ui.notifications.warn("No party member tokens on this scene. Use 'Deposit Tokens' first.");
+        return;
+      }
+
+      const tokenDocs = memberTokens.map(t => t.document ?? t);
+      const anyInCombat = tokenDocs.some(t => t.inCombat);
+
+      try {
+        if (anyInCombat) {
+          await foundry.documents.TokenDocument.implementation.deleteCombatants(tokenDocs);
+        } else {
+          await foundry.documents.TokenDocument.implementation.createCombatants(tokenDocs);
+        }
+        this.render();
+      } catch (err) { ui.notifications.warn(err.message); }
+      return;
+    }
+
     const tokens = canvas.tokens.controlled.map((t) => t.document);
     if (!this.object.controlled) tokens.push(this.document);
     try {
       if (this.document.inCombat) await foundry.documents.TokenDocument.implementation.deleteCombatants(tokens);
       else await foundry.documents.TokenDocument.implementation.createCombatants(tokens);
     } catch (err) { ui.notifications.warn(err.message); }
+  }
+
+  async _onToggleClownCar(event, target) {
+    const actor = this.document.actor;
+    if (!this._isPartyActor(actor)) return;
+
+    const scene = this.document.scene;
+    if (!scene?.isOwner) {
+      ui.notifications.warn("You don't have permission to modify this scene.");
+      return;
+    }
+
+    target.disabled = true;
+
+    try {
+      const memberTokens = actor.members.flatMap(m => m.getActiveTokens(true, true));
+
+      if (memberTokens.length > 0) {
+        await this._retrievePartyTokens(memberTokens);
+      } else {
+        await this._depositPartyTokens();
+      }
+
+      this.render();
+    } catch (err) {
+      console.error("Clown car error:", err);
+      ui.notifications.error(err.message);
+    } finally {
+      target.disabled = false;
+    }
+  }
+
+  async _retrievePartyTokens(memberTokens) {
+    const scene = this.document.scene;
+    const partyX = this.document.x;
+    const partyY = this.document.y;
+
+    const updates = memberTokens.map(t => ({
+      _id: t.id,
+      x: partyX,
+      y: partyY,
+    }));
+    await scene.updateEmbeddedDocuments("Token", updates);
+
+    await Promise.all(memberTokens.map(async token => {
+      await token.object?.animationContexts?.get(token.object.movementAnimationName)?.promise;
+      return token.delete();
+    }));
+  }
+
+  async _depositPartyTokens() {
+    const actor = this.document.actor;
+    const scene = this.document.scene;
+    const car = this.document;
+
+    if (!car.object) return;
+
+    const newTokens = (await Promise.all(
+      actor.members.map(m => m.getTokenDocument({ x: car.x, y: car.y, actorLink: true }))
+    )).map(t => ({
+      ...t.toObject(),
+      x: car.x,
+      y: car.y,
+    })).sort((a, b) => b.width - a.width);
+
+    const createdTokens = await scene.createEmbeddedDocuments("Token", newTokens);
+
+    const freeSpaces = this._getDepositSpaces();
+    const placementData = createdTokens.map(token => {
+      const widthPixels = token.mechanicalBounds?.width ?? token.bounds?.width ?? canvas.grid.size;
+      const square = freeSpaces.findSplice?.(s =>
+        Math.abs(s.x - token.x) >= widthPixels && Math.abs(s.y - token.y) >= widthPixels
+      ) ?? freeSpaces.shift();
+      return {
+        _id: token._id ?? "",
+        x: square?.x ?? car.x,
+        y: square?.y ?? car.y,
+      };
+    });
+
+    await scene.updateEmbeddedDocuments("Token", placementData);
+  }
+
+  _getDepositSpaces() {
+    const placeable = this.document.object;
+    if (!placeable) return [];
+
+    const center = placeable.center;
+    const diameter = placeable.bounds.width * 7;
+    const radiusPixels = diameter / 2;
+    const distance = canvas.dimensions?.distance ?? 5;
+    const radius = radiusPixels / distance;
+
+    const areaBounds = new PIXI.Rectangle(
+      center.x - radiusPixels,
+      center.y - radiusPixels,
+      diameter,
+      diameter
+    );
+
+    // Use pf2e's getAreaSquares
+    if (typeof getAreaSquares === "function") {
+      const squares = getAreaSquares({ bounds: areaBounds, radius, token: placeable })
+        .filter(s => s.active);
+      return squares.filter(s =>
+        !(s.x === placeable.x && s.y === placeable.y) &&
+        !(s.center.x === center.x && s.center.y === center.y) &&
+        !placeable.checkCollision(s.center, { type: "move", mode: "any" })
+      ).reverse();
+    }
+
+    // Fallback
+    const gridSize = canvas.grid.size;
+    const positions = [];
+    for (let ring = 1; ring <= 3; ring++) {
+      for (let dx = -ring; dx <= ring; dx++) {
+        for (let dy = -ring; dy <= ring; dy++) {
+          if (Math.abs(dx) === ring || Math.abs(dy) === ring) {
+            const x = placeable.x + dx * gridSize;
+            const y = placeable.y + dy * gridSize;
+            const testCenter = { x: x + gridSize / 2, y: y + gridSize / 2 };
+            if (!placeable.checkCollision(testCenter, { type: "move", mode: "any" })) {
+              positions.push({ x, y, center: testCenter });
+            }
+          }
+        }
+      }
+    }
+    return positions;
   }
 
   _onToggleTarget(event, target) {
