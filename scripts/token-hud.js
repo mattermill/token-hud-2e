@@ -1,12 +1,12 @@
 Hooks.once("init", function () {
   if (typeof libWrapper !== "undefined") {
     libWrapper.register(
-      "token-hud-2e",
+      "axeom-hud-pf2e",
       "DetectionMode.prototype.testVisibility",
       function (wrapped, visionSource, mode, { object, tests }) {
         const src = visionSource.object.document;
         const srcActorId = src.actor?.id;
-        const flag = object?.document?.getFlag("token-hud-2e", "conditional-visibility-actors") ?? [];
+        const flag = object?.document?.getFlag("axeom-hud-pf2e", "conditional-visibility-actors") ?? [];
         if (srcActorId && flag.includes(srcActorId)) return false;
         return wrapped(visionSource, mode, { object, tests });
       },
@@ -17,7 +17,7 @@ Hooks.once("init", function () {
     DetectionMode.prototype.testVisibility = function (visionSource, mode, config) {
       const src = visionSource.object.document;
       const srcActorId = src.actor?.id;
-      const flag = config.object?.document?.getFlag("token-hud-2e", "conditional-visibility-actors") ?? [];
+      const flag = config.object?.document?.getFlag("axeom-hud-pf2e", "conditional-visibility-actors") ?? [];
       if (srcActorId && flag.includes(srcActorId)) return false;
       return originalTestVisibility.call(this, visionSource, mode, config);
     };
@@ -26,7 +26,7 @@ Hooks.once("init", function () {
 
 Hooks.on("refreshToken", (token) => {
   if (!game.user.isGM) return;
-  const flag = token.document.getFlag("token-hud-2e", "conditional-visibility-actors") ?? [];
+  const flag = token.document.getFlag("axeom-hud-pf2e", "conditional-visibility-actors") ?? [];
   const hasConditionalVisibility = flag.length > 0;
   if (hasConditionalVisibility && !token.document.hidden) {
     token.mesh.alpha = 0.5;
@@ -55,7 +55,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
   };
 
   static PARTS = {
-    hud: { root: true, template: "modules/token-hud-2e/templates/TokenHUD.hbs" },
+    hud: { root: true, template: "modules/axeom-hud-pf2e/templates/TokenHUD.hbs" },
   };
 
   constructor(...args) {
@@ -347,7 +347,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
   }
 
   _getConditionalVisibilityData() {
-    const flag = this.document.getFlag("token-hud-2e", "conditional-visibility-actors") ?? [];
+    const flag = this.document.getFlag("axeom-hud-pf2e", "conditional-visibility-actors") ?? [];
     const currentActorId = this.document.actor?.id;
     const isHiddenFromAll = this.document.hidden;
     let partyMembers = [];
@@ -600,7 +600,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
       const tokenDocs = canvas.tokens.controlled.map((t) => t.document);
       if (!this.object.controlled) tokenDocs.push(this.document);
       for (const doc of tokenDocs) {
-        await doc.unsetFlag("token-hud-2e", "conditional-visibility-actors");
+        await doc.unsetFlag("axeom-hud-pf2e", "conditional-visibility-actors");
         if (doc.hidden) await doc.update({ hidden: false });
       }
       canvas.perception.update({ refreshVision: true });
@@ -624,19 +624,19 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
     if (!this.object.controlled) tokenDocs.push(this.document);
     if (isRightClick) {
       for (const doc of tokenDocs) {
-        await doc.unsetFlag("token-hud-2e", "conditional-visibility-actors");
+        await doc.unsetFlag("axeom-hud-pf2e", "conditional-visibility-actors");
         if (doc.hidden) await doc.update({ hidden: false });
       }
       canvas.perception.update({ refreshVision: true });
     } else {
       if (hiddenFromAllActors || this.document.hidden) {
         for (const doc of tokenDocs) {
-          await doc.unsetFlag("token-hud-2e", "conditional-visibility-actors");
+          await doc.unsetFlag("axeom-hud-pf2e", "conditional-visibility-actors");
           if (doc.hidden) await doc.update({ hidden: false });
         }
       } else {
         for (const doc of tokenDocs) {
-          await doc.setFlag("token-hud-2e", "conditional-visibility-actors", allActorIds);
+          await doc.setFlag("axeom-hud-pf2e", "conditional-visibility-actors", allActorIds);
         }
       }
       canvas.perception.update({ refreshVision: true });
@@ -652,17 +652,17 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
     const tokenDocs = canvas.tokens.controlled.map((t) => t.document);
     if (!this.object.controlled) tokenDocs.push(this.document);
     // Use the primary document's state to determine the toggle action
-    let primaryFlags = this.document.getFlag("token-hud-2e", "conditional-visibility-actors") ?? [];
+    let primaryFlags = this.document.getFlag("axeom-hud-pf2e", "conditional-visibility-actors") ?? [];
     const isCurrentlyHidden = primaryFlags.includes(actorId);
     for (const doc of tokenDocs) {
-      let flags = doc.getFlag("token-hud-2e", "conditional-visibility-actors") ?? [];
+      let flags = doc.getFlag("axeom-hud-pf2e", "conditional-visibility-actors") ?? [];
       if (isRightClick) {
         if (isCurrentlyHidden) flags = flags.filter((id) => id !== actorId);
       } else {
         if (!isCurrentlyHidden && !flags.includes(actorId)) flags.push(actorId);
         else if (isCurrentlyHidden) flags = flags.filter((id) => id !== actorId);
       }
-      await doc.setFlag("token-hud-2e", "conditional-visibility-actors", flags);
+      await doc.setFlag("axeom-hud-pf2e", "conditional-visibility-actors", flags);
       if (doc.hidden) await doc.update({ hidden: false });
     }
     canvas.perception.update({ refreshVision: true });
@@ -699,7 +699,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
 }
 
 Hooks.once("setup", () => {
-  foundry.applications.handlebars.loadTemplates(["modules/token-hud-2e/templates/TokenHUD.hbs"]);
+  foundry.applications.handlebars.loadTemplates(["modules/axeom-hud-pf2e/templates/TokenHUD.hbs"]);
   CONFIG.Token.hudClass = TokenTagsHUD;
 });
 
