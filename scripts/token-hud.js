@@ -33,25 +33,25 @@ Hooks.on("refreshToken", (token) => {
   }
 });
 
-class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
+class AxTokenHud extends foundry.applications.api.HandlebarsApplicationMixin(
   foundry.applications.hud.BasePlaceableHUD,
 ) {
   static DEFAULT_OPTIONS = {
     id: "token-hud",
     actions: {
-      togglePalette: TokenTagsHUD.prototype._onTogglePalette,
-      effect: { handler: TokenTagsHUD.prototype._onToggleEffect, buttons: [0, 2] },
-      incrementEffect: TokenTagsHUD.prototype._onIncrementEffect,
-      decrementEffect: TokenTagsHUD.prototype._onDecrementEffect,
-      visibility: { handler: TokenTagsHUD.prototype._onToggleVisibility, buttons: [0, 2] },
-      conditionalVisibilityAll: { handler: TokenTagsHUD.prototype._onConditionalVisibilityAll, buttons: [0, 2] },
-      conditionalVisibilityToken: { handler: TokenTagsHUD.prototype._onConditionalVisibilityToken, buttons: [0, 2] },
-      combat: TokenTagsHUD.prototype._onToggleCombat,
-      clownCar: TokenTagsHUD.prototype._onToggleClownCar,
-      target: TokenTagsHUD.prototype._onToggleTarget,
-      sort: TokenTagsHUD.prototype._onSort,
-      config: TokenTagsHUD.prototype._onConfig,
-      focusInput: TokenTagsHUD.prototype._onFocusInput,
+      togglePalette: AxTokenHud.prototype._onTogglePalette,
+      effect: { handler: AxTokenHud.prototype._onToggleEffect, buttons: [0, 2] },
+      incrementEffect: AxTokenHud.prototype._onIncrementEffect,
+      decrementEffect: AxTokenHud.prototype._onDecrementEffect,
+      visibility: { handler: AxTokenHud.prototype._onToggleVisibility, buttons: [0, 2] },
+      conditionalVisibilityAll: { handler: AxTokenHud.prototype._onConditionalVisibilityAll, buttons: [0, 2] },
+      conditionalVisibilityToken: { handler: AxTokenHud.prototype._onConditionalVisibilityToken, buttons: [0, 2] },
+      combat: AxTokenHud.prototype._onToggleCombat,
+      clownCar: AxTokenHud.prototype._onToggleClownCar,
+      target: AxTokenHud.prototype._onToggleTarget,
+      sort: AxTokenHud.prototype._onSort,
+      config: AxTokenHud.prototype._onConfig,
+      focusInput: AxTokenHud.prototype._onFocusInput,
     },
   };
 
@@ -65,6 +65,11 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
     this._lastEffectsUpdateHash = null;
     this._paletteStates = new Map();
     this._submenuTimeout = null;
+    this._statusEffectsCache = null;
+    this._conditionalVisibilityCache = null;
+    this._els = null;
+    this._boundSearchInput = null;
+    this._boundSearchKeydown = null;
   }
 
   get actor() { return this.document?.actor; }
@@ -99,15 +104,15 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
             const query = searchValue.trim().toLowerCase();
             const items = submenu.querySelectorAll(".ax-th-submenu-item.ax-th-effect-control");
             for (const el of items) {
-              const name = (el.dataset.effectName || el.querySelector(".ax-th-menu-label")?.textContent || "").toLowerCase();
+              const name = (el.dataset.effectName ?? "").toLowerCase();
               const match = !query || name.includes(query);
-              el.style.display = match ? "" : "none";
+              el.classList.toggle("ax-th-filtered-out", !match);
               el.classList.remove("ax-th-selected");
             }
             const itemToSelect = selectedStatusId
-              ? submenu.querySelector(`.ax-th-submenu-item[data-status-id="${selectedStatusId}"]`)
-              : Array.from(items).find((el) => el.style.display !== "none");
-            if (itemToSelect && itemToSelect.style.display !== "none") {
+              ? submenu.querySelector(`.ax-th-submenu-item[data-status-id="${selectedStatusId}"]:not(.ax-th-filtered-out)`)
+              : Array.from(items).find((el) => !el.classList.contains("ax-th-filtered-out"));
+            if (itemToSelect && !itemToSelect.classList.contains("ax-th-filtered-out")) {
               itemToSelect.classList.add("ax-th-selected");
             }
             // Restore focus to search input if it was focused before render
@@ -118,7 +123,26 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
         }
       }
     }
+    this._cacheElements();
     return result;
+  }
+
+  _cacheElements() {
+    if (!this.element) return;
+    this._els = {
+      statusSubmenu: this.element.querySelector(".ax-th-submenu.ax-th-status-effects"),
+      visibilitySubmenu: this.element.querySelector(".ax-th-submenu.ax-th-conditional-visibility"),
+      searchInput: this.element.querySelector("[data-effect-search='true']"),
+      effectItems: null, // Lazy-loaded
+    };
+  }
+
+  _getEffectItems() {
+    if (!this._els?.statusSubmenu) return [];
+    if (!this._els.effectItems) {
+      this._els.effectItems = this._els.statusSubmenu.querySelectorAll(".ax-th-submenu-item.ax-th-effect-control");
+    }
+    return this._els.effectItems;
   }
 
   async close(options = {}) {
@@ -127,6 +151,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
     if (this.object && !options.skipRelease) this.object.release();
     this._cleanupInputs();
     this._clearCaches();
+    this._els = null;
     return await super.close(options);
   }
 
@@ -144,6 +169,14 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
     html.on("mouseleave", ".ax-th-conditional-visibility-token", this._onConditionalVisibilityTokenHoverOut.bind(this));
     html.on("mouseleave", this._onHudMouseLeave.bind(this));
     setTimeout(() => { this._selectFirstMenuItem(); }, 100);
+  }
+
+  _selectFirstMenuItem() {
+    // Select first interactive menu item for keyboard navigation hints
+    const firstItem = this.element?.querySelector(".ax-th-menu-item:not(.ax-th-bar-item):not(.ax-th-elevation-item)");
+    if (firstItem) {
+      firstItem.classList.add("ax-th-keyboard-selected");
+    }
   }
 
   _onInputBlur(event) {
@@ -165,18 +198,28 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
 
   _onEffectSearchInput(event) {
     const query = event.currentTarget.value.trim().toLowerCase();
-    const submenu = this.element?.querySelector(".ax-th-submenu.ax-th-status-effects");
+    const submenu = this._els?.statusSubmenu ?? this.element?.querySelector(".ax-th-submenu.ax-th-status-effects");
     if (!submenu) return;
-    const items = submenu.querySelectorAll(".ax-th-submenu-item.ax-th-effect-control");
-    for (const el of items) {
-      const name = (el.dataset.effectName || el.querySelector(".ax-th-menu-label")?.textContent || "").toLowerCase();
-      const match = !query || name.includes(query);
-      el.style.display = match ? "" : "none";
-    }
+    const items = this._getEffectItems();
+
+    requestAnimationFrame(() => {
+      let firstVisible = null;
+      for (const el of items) {
+        const name = (el.dataset.effectName ?? "").toLowerCase();
+        const match = !query || name.includes(query);
+        el.classList.toggle("ax-th-filtered-out", !match);
+        if (match && !firstVisible) firstVisible = el;
+      }
+      // Auto-select first visible if nothing selected
+      if (firstVisible && !submenu.querySelector(".ax-th-submenu-item.ax-th-selected:not(.ax-th-filtered-out)")) {
+        submenu.querySelectorAll(".ax-th-submenu-item.ax-th-selected").forEach(el => el.classList.remove("ax-th-selected"));
+        firstVisible.classList.add("ax-th-selected");
+      }
+    });
   }
 
   _onEffectSearchKeydown(event) {
-    const submenu = this.element?.querySelector(".ax-th-submenu.ax-th-status-effects");
+    const submenu = this._els?.statusSubmenu ?? this.element?.querySelector(".ax-th-submenu.ax-th-status-effects");
     if (!submenu) return;
     if (event.key === "Escape") {
       const trigger = submenu.previousElementSibling;
@@ -184,13 +227,14 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
       // Allow the default Escape behavior (token deselection)
       return;
     }
-    const visible = Array.from(submenu.querySelectorAll(".ax-th-submenu-item.ax-th-effect-control")).filter((el) => el.style.display !== "none");
+    const items = this._getEffectItems();
+    const visible = Array.from(items).filter((el) => !el.classList.contains("ax-th-filtered-out"));
     if (!visible.length) return;
     let currentIndex = visible.findIndex((el) => el.classList.contains("ax-th-selected"));
     const moveSelection = (delta) => {
       if (currentIndex === -1) currentIndex = 0;
       else currentIndex = (currentIndex + delta + visible.length) % visible.length;
-      visible.forEach((el) => el.classList.remove("ax-th-selected"));
+      for (const el of items) el.classList.remove("ax-th-selected");
       visible[currentIndex].classList.add("ax-th-selected");
       visible[currentIndex].scrollIntoView({ block: "nearest" });
     };
@@ -264,7 +308,11 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
     allInputs.forEach((input) => { input.classList.remove("ax-th-active", "ax-th-focused"); });
   }
 
-  _clearCaches() { this._paletteStates?.clear(); }
+  _clearCaches() {
+    this._paletteStates?.clear();
+    this._statusEffectsCache = null;
+    this._conditionalVisibilityCache = null;
+  }
 
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
@@ -298,6 +346,12 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
   }
 
   _getStatusEffects() {
+    // Check cache validity
+    const cacheKey = this._computeStatusEffectsCacheKey();
+    if (this._statusEffectsCache?.key === cacheKey) {
+      return this._statusEffectsCache.value;
+    }
+
     const choices = {};
     for (const status of CONFIG.statusEffects) {
       if (status.hud === false || (foundry.utils.getType(status.hud) === "Object" && status.hud.actorTypes?.includes(this.document.actor.type) === false)) continue;
@@ -325,7 +379,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
       }
     }
     // Check ActiveEffects for non-2e status effects
-    const activeEffects = this.actor?.effects || [];
+    const activeEffects = this.actor?.effects ?? [];
     for (const effect of activeEffects) {
       for (const statusId of effect.statuses) {
         const status = choices[statusId];
@@ -337,7 +391,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
         break;
       }
     }
-    return Object.values(choices).map((status) => ({
+    const result = Object.values(choices).map((status) => ({
       id: status.id,
       title: status.title,
       src: status.src,
@@ -346,9 +400,26 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
       isValued: status.isValued,
       cssClass: [status.isActive ? "ax-th-active" : null, status.isOverlay ? "ax-th-overlay" : null].filterJoin(" "),
     }));
+
+    // Cache the result
+    this._statusEffectsCache = { key: cacheKey, value: result };
+    return result;
+  }
+
+  _computeStatusEffectsCacheKey() {
+    const actorId = this.actor?.id ?? "";
+    const conditions = this.actor?.conditions?.active?.map(c => `${c.slug}:${c.value ?? 0}`).join(",") ?? "";
+    const effects = this.actor?.effects?.map(e => `${e.id}:${Array.from(e.statuses).join("|")}`).join(",") ?? "";
+    return `${actorId}|${conditions}|${effects}`;
   }
 
   _getConditionalVisibilityData() {
+    // Check cache validity
+    const cacheKey = this._computeConditionalVisibilityCacheKey();
+    if (this._conditionalVisibilityCache?.key === cacheKey) {
+      return this._conditionalVisibilityCache.value;
+    }
+
     const flag = this.document.getFlag("axeom-hud-pf2e", "conditional-visibility-actors") ?? [];
     const currentActorId = this.document.actor?.id;
     const isHiddenFromAll = this.document.hidden;
@@ -362,7 +433,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
       .map((a) => ({
         id: a.id,
         name: a.name,
-        img: a.prototypeToken?.texture?.src || a.img,
+        img: a.prototypeToken?.texture?.src ?? a.img,
         isHidden: flag.includes(a.id),
         cssClass: flag.includes(a.id) ? "ax-th-active" : "",
       }));
@@ -384,7 +455,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
       conditionalVisibilityLabel = "Hide from…";
       conditionalVisibilityActive = false;
     }
-    return {
+    const result = {
       conditionalVisibilityActors: actors,
       conditionalVisibilityLabel,
       conditionalVisibilityActive,
@@ -392,6 +463,19 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
       hiddenFromAll: isHiddenFromAll,
       hiddenFromAllActors,
     };
+
+    // Cache the result
+    this._conditionalVisibilityCache = { key: cacheKey, value: result };
+    return result;
+  }
+
+  _computeConditionalVisibilityCacheKey() {
+    const flag = this.document.getFlag("axeom-hud-pf2e", "conditional-visibility-actors") ?? [];
+    const hidden = this.document.hidden;
+    const actorId = this.document.actor?.id ?? "";
+    const partyActor = game.actors.party;
+    const partyMemberIds = partyActor?.members?.map(m => m.id).join(",") ?? "";
+    return `${actorId}|${hidden}|${flag.join(",")}|${partyMemberIds}`;
   }
 
   _isPartyActor(actor) {
@@ -875,7 +959,7 @@ class TokenTagsHUD extends foundry.applications.api.HandlebarsApplicationMixin(
 
 Hooks.once("setup", () => {
   foundry.applications.handlebars.loadTemplates(["modules/axeom-hud-pf2e/templates/TokenHUD.hbs"]);
-  CONFIG.Token.hudClass = TokenTagsHUD;
+  CONFIG.Token.hudClass = AxTokenHud;
 });
 
-globalThis.TokenTagsHUD = TokenTagsHUD;
+globalThis.AxTokenHud = AxTokenHud;

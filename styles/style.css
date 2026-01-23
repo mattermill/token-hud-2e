@@ -186,6 +186,10 @@ body.theme-light {
   opacity: 1;
 }
 
+.ax-th-submenu-item.ax-th-filtered-out {
+  display: none !important;
+}
+
 .ax-th-menu-item.ax-th-submenu-trigger {
   position: relative;
 }
