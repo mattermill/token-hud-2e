@@ -1,6 +1,6 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mattermill/axeom-hud-pf2e/refs/heads/main/assets/axeom-lock-onlight.svg">
-  <source media="(prefers-color-scheme: light)" srcset="[light-mode-image.png](https://raw.githubusercontent.com/mattermill/axeom-hud-pf2e/refs/heads/main/assets/axeom-lock-ondark.svg)">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/mattermill/axeom-hud-pf2e/refs/heads/main/assets/axeom-lock-onlight.svg">
+  <source media="(prefers-color-scheme: dark)" srcset="[light-mode-image.png](https://raw.githubusercontent.com/mattermill/axeom-hud-pf2e/refs/heads/main/assets/axeom-lock-ondark.svg)">
   <img alt="Fallback image description" src="https://raw.githubusercontent.com/mattermill/axeom-hud-pf2e/refs/heads/main/assets/axeom-lock-onlight.svg">
 </picture>
 
