@@ -1,11 +1,14 @@
-<picture>
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/mattermill/axeom-hud-pf2e/refs/heads/main/assets/axeom-lock-onlight.svg">
-  <source media="(prefers-color-scheme: dark)" srcset="[light-mode-image.png](https://raw.githubusercontent.com/mattermill/axeom-hud-pf2e/refs/heads/main/assets/axeom-lock-ondark.svg)">
-  <img alt="Fallback image description" src="https://raw.githubusercontent.com/mattermill/axeom-hud-pf2e/refs/heads/main/assets/axeom-lock-onlight.svg">
-</picture>
+<p align="center" dir="auto">
+    <picture >
+      <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mattermill/axeom-hud-pf2e/HEAD/.github/axeom-lockup-ondark.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/mattermill/axeom-hud-pf2e/HEAD/.github/axeom-lock-onlight.svg">
+      <img alt="Axeom HUD Logo" src="https://raw.githubusercontent.com/mattermill/axeom-hud-pf2e/HEAD/.github/axeom-lock-onlight.svg" width="240" height="50" style="visibility: visible; max-width: 100%;">
+    </picture>
+</p>
 
-# Axeom HUD: PF2e
-Token HUD improvements for [Pathfinder 2e](https://github.com/foundryvtt/pf2e) on [Foundry VTT](https://github.com/foundryvtt). 
+<p align="center" dir="auto">Token HUD improvements for Pathfinder 2e on Foundry VTT. </p>
+
+---
 
 ## Features
 
