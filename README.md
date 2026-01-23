@@ -1,4 +1,4 @@
-# Token HUD 2e
+# Axeom HUD: PF2e
 Token HUD improvements for [Pathfinder 2e](https://github.com/foundryvtt/pf2e) on [Foundry VTT](https://github.com/foundryvtt). 
 
 ## Features
