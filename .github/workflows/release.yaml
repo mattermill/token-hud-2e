@@ -16,7 +16,7 @@ jobs:
 
       - name: Create module zip
         run: |
-          zip -r token-hud-2e.zip . \
+          zip -r axeom-hud-pf2e.zip . \
             -x "*.git*" \
             -x "*.DS_Store" \
             -x "node_modules/*" \
@@ -28,8 +28,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./token-hud-2e.zip
-          asset_name: token-hud-2e.zip
+          asset_path: ./axeom-hud-pf2e.zip
+          asset_name: axeom-hud-pf2e.zip
           asset_content_type: application/zip
 
       - name: Notify Foundry Package Release API
@@ -38,11 +38,11 @@ jobs:
             -H "Content-Type: application/json" \
             -H "Authorization: ${{ secrets.FOUNDRY_API_KEY }}" \
             -d '{
-              "id": "token-hud-2e",
+              "id": "axeom-hud-pf2e",
               "release": {
                 "version": "${{ steps.get_version.outputs.VERSION }}",
-                "manifest": "https://github.com/mattermill/token-hud-2e/releases/download/v${{ steps.get_version.outputs.VERSION }}/module.json",
-                "notes": "https://github.com/mattermill/token-hud-2e/releases/tag/v${{ steps.get_version.outputs.VERSION }}",
+                "manifest": "https://github.com/mattermill/axeom-hud-pf2e/releases/download/v${{ steps.get_version.outputs.VERSION }}/module.json",
+                "notes": "https://github.com/mattermill/axeom-hud-pf2e/releases/tag/v${{ steps.get_version.outputs.VERSION }}",
                 "compatibility": {
                   "minimum": "10",
                   "verified": "13"
