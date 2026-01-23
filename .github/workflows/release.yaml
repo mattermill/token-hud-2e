@@ -1,12 +1,12 @@
 name: Release Module
-
 on:
   release:
     types: [published]
-
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Need this for uploading release assets
     steps:
       - uses: actions/checkout@v3
 
@@ -22,7 +22,7 @@ jobs:
             -x "node_modules/*" \
             -x ".github/*"
 
-      - name: Upload to release
+      - name: Upload zip to release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -31,6 +31,16 @@ jobs:
           asset_path: ./axeom-hud-pf2e.zip
           asset_name: axeom-hud-pf2e.zip
           asset_content_type: application/zip
+
+      - name: Upload module.json to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./module.json
+          asset_name: module.json
+          asset_content_type: application/json
 
       - name: Notify Foundry Package Release API
         run: |
@@ -42,10 +52,4 @@ jobs:
               "release": {
                 "version": "${{ steps.get_version.outputs.VERSION }}",
                 "manifest": "https://github.com/mattermill/axeom-hud-pf2e/releases/download/v${{ steps.get_version.outputs.VERSION }}/module.json",
-                "notes": "https://github.com/mattermill/axeom-hud-pf2e/releases/tag/v${{ steps.get_version.outputs.VERSION }}",
-                "compatibility": {
-                  "minimum": "10",
-                  "verified": "13"
-                }
-              }
-            }'
+                "notes": "https://github.com/mattermill/axeom-hud-pf2e/releases/tag/v${{ steps.get_version.outputs.
