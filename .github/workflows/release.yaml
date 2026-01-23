@@ -6,7 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Need this for uploading release assets
+      contents: write
     steps:
       - uses: actions/checkout@v3
 
@@ -43,13 +43,22 @@ jobs:
           asset_content_type: application/json
 
       - name: Notify Foundry Package Release API
+        env:
+          VERSION: ${{ steps.get_version.outputs.VERSION }}
+          FOUNDRY_API_KEY: ${{ secrets.FOUNDRY_API_KEY }}
         run: |
           curl -X POST "https://api.foundryvtt.com/_api/packages/release_version/" \
             -H "Content-Type: application/json" \
-            -H "Authorization: ${{ secrets.FOUNDRY_API_KEY }}" \
-            -d '{
-              "id": "axeom-hud-pf2e",
-              "release": {
-                "version": "${{ steps.get_version.outputs.VERSION }}",
-                "manifest": "https://github.com/mattermill/axeom-hud-pf2e/releases/download/v${{ steps.get_version.outputs.VERSION }}/module.json",
-                "notes": "https://github.com/mattermill/axeom-hud-pf2e/releases/tag/v${{ steps.get_version.outputs.
+            -H "Authorization: ${FOUNDRY_API_KEY}" \
+            -d "{
+              \"id\": \"axeom-hud-pf2e\",
+              \"release\": {
+                \"version\": \"${VERSION}\",
+                \"manifest\": \"https://github.com/mattermill/axeom-hud-pf2e/releases/download/v${VERSION}/module.json\",
+                \"notes\": \"https://github.com/mattermill/axeom-hud-pf2e/releases/tag/v${VERSION}\",
+                \"compatibility\": {
+                  \"minimum\": \"10\",
+                  \"verified\": \"13\"
+                }
+              }
+            }"
