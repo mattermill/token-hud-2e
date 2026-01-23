@@ -20,7 +20,7 @@ When using keyboard shortcuts, if no condition is selected, the first condition 
 Paste the following manifest URL into Foundry's "Install Module" dialog:
     
  ```
- https://raw.githubusercontent.com/mattermill/token-hud-2e/main/module.json
+ https://raw.githubusercontent.com/mattermill/axeom-hud-pf2e/main/module.json
  ```
 
 ## Known Issues
