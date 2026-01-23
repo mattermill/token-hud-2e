@@ -9,6 +9,8 @@
 <p align="center" dir="auto">Token HUD improvements for Pathfinder 2e on Foundry VTT. </p>
 
 ---
+## Compatibility
+⚠️ If you previously installed `token-hud-2e`, you can safely uninstall the old module and use the updated `axeom-hud-pf2e`.
 
 ## Features
 
