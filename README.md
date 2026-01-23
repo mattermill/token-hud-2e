@@ -1,3 +1,9 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/mattermill/axeom-hud-pf2e/refs/heads/main/assets/axeom-lock-onlight.svg">
+  <source media="(prefers-color-scheme: light)" srcset="[light-mode-image.png](https://raw.githubusercontent.com/mattermill/axeom-hud-pf2e/refs/heads/main/assets/axeom-lock-ondark.svg)">
+  <img alt="Fallback image description" src="https://raw.githubusercontent.com/mattermill/axeom-hud-pf2e/refs/heads/main/assets/axeom-lock-onlight.svg">
+</picture>
+
 # Axeom HUD: PF2e
 Token HUD improvements for [Pathfinder 2e](https://github.com/foundryvtt/pf2e) on [Foundry VTT](https://github.com/foundryvtt). 
 
