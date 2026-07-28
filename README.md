@@ -10,10 +10,6 @@
 
 ---
 
-## Compatibility
-
-⚠️ If you previously installed `token-hud-2e`, you can safely uninstall the old module and use the updated `axeom-hud-pf2e`.
-
 ## Features
 
 ### Quickly manage status effects:
@@ -38,6 +34,10 @@ Paste the following manifest URL into Foundry's "Install Module" dialog:
 ```
 https://raw.githubusercontent.com/mattermill/axeom-hud-pf2e/main/module.json
 ```
+
+## Compatibility
+
+⚠️ If you previously installed `token-hud-2e`, you can safely uninstall the old module and use the updated `axeom-hud-pf2e`.
 
 ## Known Issues
 
