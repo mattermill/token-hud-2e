@@ -170,7 +170,6 @@ class AxTokenHud extends foundry.applications.api.HandlebarsApplicationMixin(
             ) {
               itemToSelect.classList.add("ax-th-selected");
             }
-            // Restore focus to search input if it was focused before render
             if (searchWasFocused) {
               search.focus({ preventScroll: true });
             }
@@ -221,56 +220,81 @@ class AxTokenHud extends foundry.applications.api.HandlebarsApplicationMixin(
 
   activateListeners(html) {
     super.activateListeners(html);
-    html.on(
-      "focusout",
-      ".ax-th-bar-input, .ax-th-elevation-input",
-      this._onInputBlur.bind(this),
-    );
-    html.on(
-      "keydown",
-      ".ax-th-bar-input, .ax-th-elevation-input",
-      this._onInputKeydown.bind(this),
-    );
-    html.on("keydown", ".ax-th-submenu", this._onSubmenuKeydown.bind(this));
 
-    html.on(
+    html.addEventListener("focusout", (event) => {
+      if (event.target.matches(".ax-th-bar-input, .ax-th-elevation-input")) {
+        this._onInputBlur(event);
+      }
+    });
+
+    html.addEventListener("keydown", (event) => {
+      if (event.target.matches(".ax-th-bar-input, .ax-th-elevation-input")) {
+        this._onInputKeydown(event);
+      } else if (event.target.closest(".ax-th-submenu")) {
+        this._onSubmenuKeydown(event);
+      }
+    });
+
+    html.addEventListener(
       "mouseenter",
-      ".ax-th-menu-item.ax-th-submenu-trigger",
-      this._onSubmenuEnter.bind(this),
+      (event) => {
+        const trigger = event.target.closest(
+          ".ax-th-menu-item.ax-th-submenu-trigger",
+        );
+        if (trigger) {
+          this._onSubmenuEnter(event, trigger);
+          return;
+        }
+        const submenu = event.target.closest(".ax-th-submenu");
+        if (submenu) {
+          this._onSubmenuContentEnter(event, submenu);
+          return;
+        }
+        const visibilityToken = event.target.closest(
+          ".ax-th-conditional-visibility-token",
+        );
+        if (visibilityToken) {
+          this._onConditionalVisibilityTokenHover(event, visibilityToken);
+        }
+      },
+      true,
     );
-    html.on(
+
+    html.addEventListener(
       "mouseleave",
-      ".ax-th-menu-item.ax-th-submenu-trigger",
-      this._onSubmenuLeave.bind(this),
+      (event) => {
+        const trigger = event.target.closest(
+          ".ax-th-menu-item.ax-th-submenu-trigger",
+        );
+        if (trigger) {
+          this._onSubmenuLeave(event, trigger);
+          return;
+        }
+        const submenu = event.target.closest(".ax-th-submenu");
+        if (submenu) {
+          this._onSubmenuContentLeave(event, submenu);
+          return;
+        }
+        const visibilityToken = event.target.closest(
+          ".ax-th-conditional-visibility-token",
+        );
+        if (visibilityToken) {
+          this._onConditionalVisibilityTokenHoverOut(event, visibilityToken);
+          return;
+        }
+        if (event.target === html) {
+          this._onHudMouseLeave(event);
+        }
+      },
+      true,
     );
-    html.on(
-      "mouseenter",
-      ".ax-th-submenu",
-      this._onSubmenuContentEnter.bind(this),
-    );
-    html.on(
-      "mouseleave",
-      ".ax-th-submenu",
-      this._onSubmenuContentLeave.bind(this),
-    );
-    html.on(
-      "mouseenter",
-      ".ax-th-conditional-visibility-token",
-      this._onConditionalVisibilityTokenHover.bind(this),
-    );
-    html.on(
-      "mouseleave",
-      ".ax-th-conditional-visibility-token",
-      this._onConditionalVisibilityTokenHoverOut.bind(this),
-    );
-    html.on("mouseleave", this._onHudMouseLeave.bind(this));
+
     setTimeout(() => {
       this._selectFirstMenuItem();
     }, 100);
   }
 
   _selectFirstMenuItem() {
-    // Select first interactive menu item for keyboard navigation hints
     const firstItem = this.element?.querySelector(
       ".ax-th-menu-item:not(.ax-th-bar-item):not(.ax-th-elevation-item)",
     );
@@ -315,7 +339,6 @@ class AxTokenHud extends foundry.applications.api.HandlebarsApplicationMixin(
         el.classList.toggle("ax-th-filtered-out", !match);
         if (match && !firstVisible) firstVisible = el;
       }
-      // Auto-select first visible if nothing selected
       if (
         firstVisible &&
         !submenu.querySelector(
@@ -338,7 +361,6 @@ class AxTokenHud extends foundry.applications.api.HandlebarsApplicationMixin(
     if (event.key === "Escape") {
       const trigger = submenu.previousElementSibling;
       this._hideSubmenu(trigger, submenu);
-      // Allow the default Escape behavior (token deselection)
       return;
     }
     const items = this._getEffectItems();
@@ -487,21 +509,22 @@ class AxTokenHud extends foundry.applications.api.HandlebarsApplicationMixin(
   }
 
   _getStatusEffects() {
-    // Check cache validity
     const cacheKey = this._computeStatusEffectsCacheKey();
     if (this._statusEffectsCache?.key === cacheKey) {
       return this._statusEffectsCache.value;
     }
 
     const choices = {};
-    for (const status of CONFIG.statusEffects) {
+    const statusEffects = Array.isArray(CONFIG.statusEffects)
+      ? CONFIG.statusEffects
+      : Object.values(CONFIG.statusEffects);
+    for (const status of statusEffects) {
       if (
         status.hud === false ||
         (foundry.utils.getType(status.hud) === "Object" &&
           status.hud.actorTypes?.includes(this.document.actor.type) === false)
       )
         continue;
-      // Check if this is a pf2e condition
       const pf2eCondition = game.pf2e?.ConditionManager?.getCondition?.(
         status.id,
       );
@@ -530,7 +553,6 @@ class AxTokenHud extends foundry.applications.api.HandlebarsApplicationMixin(
         }
       }
     }
-    // Check ActiveEffects for non-2e status effects
     const activeEffects = this.actor?.effects ?? [];
     for (const effect of activeEffects) {
       for (const statusId of effect.statuses) {
@@ -559,7 +581,6 @@ class AxTokenHud extends foundry.applications.api.HandlebarsApplicationMixin(
       ].filterJoin(" "),
     }));
 
-    // Cache the result
     this._statusEffectsCache = { key: cacheKey, value: result };
     return result;
   }
@@ -578,7 +599,6 @@ class AxTokenHud extends foundry.applications.api.HandlebarsApplicationMixin(
   }
 
   _getConditionalVisibilityData() {
-    // Check cache validity
     const cacheKey = this._computeConditionalVisibilityCacheKey();
     if (this._conditionalVisibilityCache?.key === cacheKey) {
       return this._conditionalVisibilityCache.value;
@@ -635,7 +655,6 @@ class AxTokenHud extends foundry.applications.api.HandlebarsApplicationMixin(
       hiddenFromAllActors,
     };
 
-    // Cache the result
     this._conditionalVisibilityCache = { key: cacheKey, value: result };
     return result;
   }
@@ -717,8 +736,8 @@ class AxTokenHud extends foundry.applications.api.HandlebarsApplicationMixin(
     await this.document.update({ elevation });
   }
 
-  _onSubmenuEnter(event) {
-    const trigger = event.currentTarget;
+  _onSubmenuEnter(event, target) {
+    const trigger = target ?? event.currentTarget;
     const submenu = trigger.nextElementSibling;
     if (submenu && submenu.classList.contains("ax-th-submenu")) {
       if (this._submenuTimeout) {
@@ -730,8 +749,8 @@ class AxTokenHud extends foundry.applications.api.HandlebarsApplicationMixin(
     }
   }
 
-  _onSubmenuLeave(event) {
-    const trigger = event.currentTarget;
+  _onSubmenuLeave(event, target) {
+    const trigger = target ?? event.currentTarget;
     const submenu = trigger.nextElementSibling;
     if (submenu && submenu.classList.contains("ax-th-submenu")) {
       this._submenuTimeout = setTimeout(() => {
@@ -741,15 +760,15 @@ class AxTokenHud extends foundry.applications.api.HandlebarsApplicationMixin(
     }
   }
 
-  _onSubmenuContentEnter(event) {
+  _onSubmenuContentEnter(event, target) {
     if (this._submenuTimeout) {
       clearTimeout(this._submenuTimeout);
       this._submenuTimeout = null;
     }
   }
 
-  _onSubmenuContentLeave(event) {
-    const submenu = event.currentTarget;
+  _onSubmenuContentLeave(event, target) {
+    const submenu = target ?? event.currentTarget;
     const trigger = submenu.previousElementSibling;
     this._submenuTimeout = setTimeout(() => {
       if (!submenu.matches(":hover") && !trigger.matches(":hover"))
@@ -881,7 +900,6 @@ class AxTokenHud extends foundry.applications.api.HandlebarsApplicationMixin(
         }
       }
     } else {
-      // For non-PF2e status effects, Dead defaults to overlay (big skull)
       const useOverlay = statusId === "dead" ? !isRightClick : isRightClick;
       await this.actor.toggleStatusEffect(statusId, {
         active: !target.classList.contains("ax-th-active"),
@@ -946,8 +964,9 @@ class AxTokenHud extends foundry.applications.api.HandlebarsApplicationMixin(
     }
   }
 
-  _onConditionalVisibilityTokenHover(event) {
-    const actorId = event.currentTarget.dataset.actorId;
+  _onConditionalVisibilityTokenHover(event, target) {
+    const element = target ?? event.currentTarget;
+    const actorId = element.dataset.actorId;
     const tokens = canvas.tokens.placeables.filter(
       (t) => t.actor?.id === actorId,
     );
@@ -957,8 +976,9 @@ class AxTokenHud extends foundry.applications.api.HandlebarsApplicationMixin(
     }
   }
 
-  _onConditionalVisibilityTokenHoverOut(event) {
-    const actorId = event.currentTarget.dataset.actorId;
+  _onConditionalVisibilityTokenHoverOut(event, target) {
+    const element = target ?? event.currentTarget;
+    const actorId = element.dataset.actorId;
     const tokens = canvas.tokens.placeables.filter(
       (t) => t.actor?.id === actorId,
     );
@@ -1049,7 +1069,6 @@ class AxTokenHud extends foundry.applications.api.HandlebarsApplicationMixin(
     const isRightClick = event.button === 2;
     const tokenDocs = canvas.tokens.controlled.map((t) => t.document);
     if (!this.object.controlled) tokenDocs.push(this.document);
-    // Use the primary document's state to determine the toggle action
     let primaryFlags =
       this.document.getFlag(
         "axeom-hud-pf2e",
@@ -1246,7 +1265,6 @@ class AxTokenHud extends foundry.applications.api.HandlebarsApplicationMixin(
       diameter,
     );
 
-    // Use pf2e's getAreaSquares
     if (typeof getAreaSquares === "function") {
       const squares = getAreaSquares({
         bounds: areaBounds,
@@ -1263,7 +1281,6 @@ class AxTokenHud extends foundry.applications.api.HandlebarsApplicationMixin(
         .reverse();
     }
 
-    // Fallback
     const gridSize = canvas.grid.size;
     const positions = [];
     for (let ring = 1; ring <= 3; ring++) {
